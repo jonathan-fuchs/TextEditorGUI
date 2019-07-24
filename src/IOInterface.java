@@ -11,7 +11,48 @@ import java.util.*;
  */
 
 public class IOInterface extends WordRecommender {
+	
+	/*
+	 * Counting Instance Variables with Getters
+	 */
+	private int numTotalWords;
+	private int numCorrectWords;
+	private double percCorrectWords;
+	private int charCounts;
+	
+	public int getNumTotalWords() {
+		return numTotalWords;
+	}
 
+	public void setNumTotalWords(int numTotalWords) {
+		this.numTotalWords = numTotalWords;
+	}
+
+	public int getNumCorrectWords() {
+		return numCorrectWords;
+	}
+
+	public void setNumCorrectWords(int numCorrectWords) {
+		this.numCorrectWords = numCorrectWords;
+	}
+
+	public double getPercCorrectWords() {
+		return percCorrectWords;
+	}
+
+	public void setPercCorrectWords(double percCorrectWords) {
+		this.percCorrectWords = percCorrectWords;
+	}
+
+	public int getCharCounts() {
+		return charCounts;
+	}
+
+	public void setCharCounts(int charCounts) {
+		this.charCounts = charCounts;
+	}
+
+	
 	/**
 	 * Constructor extending WordRecommender class. super used for class inheritance.
 	 * 
@@ -81,7 +122,15 @@ public class IOInterface extends WordRecommender {
 					 * 
 					 * Then will check misspelled words and will provide alternate word suggestions
 					 */
+					
+					// Begins total word count
+					
+					numTotalWords++;
+					charCounts = charCounts + word.length();
+					
+					
 					if (checkForExactWord(word) == true) {
+						numCorrectWords++;
 						pw.print(word + " ");
 					}
 					else if(NumberChecker.isBigInteger(word) == true)
@@ -140,6 +189,7 @@ public class IOInterface extends WordRecommender {
 
 								}
 								else if (command.trim().equals("a")) {
+									numCorrectWords++;
 									pw.print(word + " ");
 
 								}
@@ -169,6 +219,8 @@ public class IOInterface extends WordRecommender {
 
 							}
 						}
+						
+								
 						System.out.println();
 						System.out.println();
 						System.out.println();						
@@ -176,6 +228,7 @@ public class IOInterface extends WordRecommender {
 					}
 					
 				}
+				percCorrectWords = numCorrectWords/numTotalWords;
 				userInput.close();
 				pw.flush();
 				
