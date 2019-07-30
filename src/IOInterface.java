@@ -200,11 +200,11 @@ public class IOInterface extends WordRecommender {
 						if (possibleWords.size() >= 1) {
 							System.out.println("The following suggestions are available");
 							System.out.println(prettyPrint(possibleWords));
-							System.out.println("Press 'r' for replace, 'a' for accept as is, 't' for type in manually.");
+							System.out.println("Press 'r' for replace, 'a' for accept as is, 't' for type in manually, 'd' to add word to dictionary.");
 						}
 						else {
 							System.out.println("There are 0 suggestions in our dictionary for this word.");
-							System.out.println("Press 'a' for accept as is, 't' for type in manually.");	
+							System.out.println("Press 'a' for accept as is, 't' for type in manually, 'd' to add word to dictionary.");	
 							rCommandAllowed = false;
 						}
 						
@@ -241,7 +241,6 @@ public class IOInterface extends WordRecommender {
 								}
 								else if (command.trim().equals("a")) {
 									printWordToDoc(pw, word, capitalizeNext, punctuationFound, punctuation);
-
 								}
 								else if (command.trim().equals("t")) {
 									System.out.println("Please type the word that will be used as the replacement in the output file.");
@@ -259,10 +258,22 @@ public class IOInterface extends WordRecommender {
 										//pw.print(correctedWord + " ");
 									}								
 								}
+								else if(command.trim().equals("d")) {
+									printWordToDoc(pw, word, capitalizeNext, punctuationFound, punctuation);
+									getDictionary().addWordToDictionaries(word);
+									updateDictionaries();
+									// Below code will update dictionary text file
+									File dictionaryDocument = new File(getFileName());
+									FileWriter fwDictionary = new FileWriter(dictionaryDocument, true);
+									PrintWriter pwDictionary = new PrintWriter(fwDictionary);
+									pwDictionary.println(word);
+									pwDictionary.close();
+									fwDictionary.close();
+									
+								}
 								else if (command.contentEquals("")) {
 									System.out.print("Please select a command ");
 									repeat = true;
-
 								}
 								else {
 									repeat = true;
@@ -280,8 +291,7 @@ public class IOInterface extends WordRecommender {
 				}
 				userInput.close();
 				pw.flush();
-				
-				
+							
 				pw.close();
 				fw.close();
 				
