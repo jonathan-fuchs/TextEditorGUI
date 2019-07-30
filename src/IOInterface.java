@@ -43,6 +43,7 @@ public class IOInterface extends WordRecommender {
 	 */
 	
 	public boolean checkDocument(String docName) {
+		SpellingAnalysis analysis = new SpellingAnalysis();
 		File userDocument = new File(docName);
 		String outputDocumentName;
 		/*
@@ -81,6 +82,11 @@ public class IOInterface extends WordRecommender {
 					 * 
 					 * Then will check misspelled words and will provide alternate word suggestions
 					 */
+					
+					// add word count
+					int currentWordCount = analysis.getWordCount();
+					analysis.setWordCount(currentWordCount++);
+					
 					if (checkForExactWord(word) == true) {
 						pw.print(word + " ");
 					}
