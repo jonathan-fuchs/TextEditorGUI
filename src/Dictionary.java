@@ -35,23 +35,30 @@ public class Dictionary {
 			Scanner scanner = new Scanner(dictionary);
 			while (scanner.hasNextLine()) {
 				String word = scanner.nextLine();
-				wordDictionary.put(word, word);
-				if (wordByLengthDictionary.get(word.length()) != null) {
-					wordByLengthDictionary.get(word.length()).add(word);
-				}
-				else {
-					ArrayList<String> seed = new ArrayList<String>();
-					seed.add(word);
-					wordByLengthDictionary.put(word.length(), seed);
-				}				
+				addWordToDictionaries(word);			
 			}	
 			scanner.close();
 		} catch (FileNotFoundException e) {
 			System.out.println("No dictionary file present!");
 			e.printStackTrace();
+		}	
+	}
+	
+	/**
+	 * Helper method to add a word to the user dictionaries
+	 * 
+	 * @param word word to be added to the dictionaries
+	 */
+	public void addWordToDictionaries(String word) {
+		wordDictionary.put(word, word);
+		if (wordByLengthDictionary.get(word.length()) != null) {
+			wordByLengthDictionary.get(word.length()).add(word);
 		}
-		
-		
+		else {
+			ArrayList<String> seed = new ArrayList<String>();
+			seed.add(word);
+			wordByLengthDictionary.put(word.length(), seed);
+		}		
 	}
 	
 	/**
