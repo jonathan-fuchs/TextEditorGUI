@@ -1,3 +1,4 @@
+import java.io.PrintWriter;
 
 public class TextFormatting {
 	private int lineCharLength = 0;
@@ -7,17 +8,17 @@ public class TextFormatting {
 	 * Insert line breaks after designated number of characters, with 80 characters as the default
 	 * @param charsPerLine
 	 */
-	public void addLineBreaks () {
-		int lengthOfLine;
-		if (this.charsPerLine < 6) {
-			lengthOfLine = 80;
-		}
-		else {
-			lengthOfLine = this.charsPerLine;
-		}
+	public void addLineBreaks (PrintWriter pw) {
+//		int lengthOfLine;
+//		if (this.charsPerLine < 6) {
+//			lengthOfLine = 80;
+//		}
+//		else {
+//			lengthOfLine = this.charsPerLine;
+//		}
 		
-		if (this.lineCharLength >= lengthOfLine) {
-			System.out.println();
+		if (this.lineCharLength >= this.charsPerLine) {
+			pw.println();
 			this.lineCharLength = 0;
 		}
 		

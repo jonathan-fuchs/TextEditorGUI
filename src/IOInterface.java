@@ -91,21 +91,21 @@ public class IOInterface extends WordRecommender {
 					if (checkForExactWord(word) == true) {
 						// check whether line break is needed
 						formatter.setLineCharLength(formatter.getLineCharLength() + word.length() + 1);
-						formatter.addLineBreaks();
+						formatter.addLineBreaks(pw);
 						pw.print(word + " ");
 					}
 					else if(NumberChecker.isBigInteger(word) == true)
 					{
 						// check whether line break is needed
 						formatter.setLineCharLength(formatter.getLineCharLength() + word.length() + 1);
-						formatter.addLineBreaks();
+						formatter.addLineBreaks(pw);
 						pw.print(word + " ");
 					}
 					else if(NumberChecker.isBigDecimal(word) == true)
 					{
 						// check whether line break is needed
 						formatter.setLineCharLength(formatter.getLineCharLength() + word.length() + 1);
-						formatter.addLineBreaks();
+						formatter.addLineBreaks(pw);
 						pw.print(word + " ");
 					}
 					else {
@@ -149,7 +149,7 @@ public class IOInterface extends WordRecommender {
 										if (NumberChecker.isInteger(replacementNumber) && Integer.parseInt(replacementNumber) > 0 && Integer.parseInt(replacementNumber) <= possibleWords.size()) {
 											// check whether line break is needed
 											formatter.setLineCharLength(formatter.getLineCharLength() + possibleWords.get(Integer.parseInt(replacementNumber) - 1).length() + 1);
-											formatter.addLineBreaks();
+											formatter.addLineBreaks(pw);
 											
 											pw.print(possibleWords.get(Integer.parseInt(replacementNumber) - 1) + " ");
 											repeatRCommand = false;
@@ -164,7 +164,7 @@ public class IOInterface extends WordRecommender {
 								else if (command.trim().equals("a")) {
 									// check whether line break is needed
 									formatter.setLineCharLength(formatter.getLineCharLength() + word.length() + 1);
-									formatter.addLineBreaks();
+									formatter.addLineBreaks(pw);
 									
 									pw.print(word + " ");
 
@@ -178,7 +178,7 @@ public class IOInterface extends WordRecommender {
 										if (!correctedWord.equals("")) {
 											// check whether line break is needed
 											formatter.setLineCharLength(formatter.getLineCharLength() + correctedWord.length() + 1);
-											formatter.addLineBreaks();
+											formatter.addLineBreaks(pw);
 											
 											pw.print(correctedWord + " ");
 										}
@@ -186,7 +186,7 @@ public class IOInterface extends WordRecommender {
 									else {
 										// check whether line break is needed
 										formatter.setLineCharLength(formatter.getLineCharLength() + correctedWord.length() + 1);
-										formatter.addLineBreaks();
+										formatter.addLineBreaks(pw);
 										
 										pw.print(correctedWord + " ");
 									}								

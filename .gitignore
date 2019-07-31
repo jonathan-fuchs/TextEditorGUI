@@ -2,3 +2,7 @@ bin/
 .settings/
 .classpath
 .project
+src/textSample.txt
+src/textSample_chk.txt
+src/adamCRCs_chk.txt
+src/engDictionary.txt
