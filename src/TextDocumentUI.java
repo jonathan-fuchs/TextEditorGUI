@@ -32,22 +32,21 @@ import javax.swing.Timer;
  */
 public class TextDocumentUI {
 	
-	JFrame frame;
-    JTextPane output;
-    JScrollPane scrollPane;
-    String documentName = "Document Editor GUI";
+	private JFrame frame;
+	private JTextPane output;
+	private JScrollPane scrollPane;
+	private String documentName = "Document Editor GUI";
 
-	String documentText;
-    JDialog popUpWindow;
-    JTextArea popUpWindowTextArea;
+	private String documentText;
+	private JDialog popUpWindow;
+	private JTextArea popUpWindowTextArea;
     
-    int pause = 800;
-    int speed = 300;
-    Timer timer;
-    boolean alwaysOnTop = false;   
-    boolean newDocument = true;
-    
-    File document;
+	private int pause = 800;
+	private int speed = 300;
+	private Timer timer;
+	private boolean alwaysOnTop = false;   
+	private boolean newDocument = true;
+	private File document;
     
     public JMenuBar createMenuBar() {
         JMenuBar menuBar;
