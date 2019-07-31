@@ -6,7 +6,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JMenuBar;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 
 import java.io.*;
 import java.nio.file.FileSystems;
@@ -52,8 +55,8 @@ public class TextDocumentUI {
     
     public JMenuBar createMenuBar() {
         JMenuBar menuBar;
-        JMenu fileMenu, editMenu, reviewMenu;
-        JMenuItem menuItemNew, menuItemSave, menuItemSaveAs, menuItemOpen, menuItemCopy, menuItemCut, menuItemPaste, menuItemSelectAll, menuItemSpellCheck, menuItemExit;
+        JMenu fileMenu, editMenu, formatMenu, reviewMenu;
+        JMenuItem menuItemNew, menuItemSave, menuItemSaveAs, menuItemOpen, menuItemCopy, menuItemCut, menuItemPaste, menuItemSelectAll, menuItemSpellCheck, menuItemExit, menuItemHighlight;
         Action copy = new DefaultEditorKit.CopyAction();
         Action cut = new DefaultEditorKit.CutAction();
         Action paste = new DefaultEditorKit.PasteAction();
@@ -169,6 +172,8 @@ public class TextDocumentUI {
         menuItemPaste.getAccessibleContext().setAccessibleDescription("Pastes selected text in the current document");
         
         
+        
+        
         menuItemSelectAll = new JMenuItem("Select All", KeyEvent.VK_A);
         menuItemSelectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
         menuItemSelectAll.getAccessibleContext().setAccessibleDescription("Select all text in the current document");
@@ -183,11 +188,39 @@ public class TextDocumentUI {
         editMenu.add(menuItemCut);
         editMenu.add(menuItemPaste);
         editMenu.addSeparator();
+        
         editMenu.add(menuItemSelectAll);
         
         
         
       //Build third menu in the menu bar.
+        
+        formatMenu = new JMenu("Format");
+        formatMenu.setMnemonic(KeyEvent.VK_O);
+        formatMenu.getAccessibleContext().setAccessibleDescription("Format Menu");
+        menuBar.add(formatMenu);
+        
+        menuItemHighlight = new JMenuItem("Highlight Text", KeyEvent.VK_H);
+        menuItemHighlight.getAccessibleContext().setAccessibleDescription("Highlights text in yellow");
+        menuItemHighlight.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e)
+        	{
+        		Highlighter painter = output.getHighlighter();
+        		try {
+					painter.addHighlight(output.getSelectionStart(), output.getSelectionEnd(), new DefaultHighlighter.DefaultHighlightPainter(new Color(0xFAED27)));
+					output.setCaretPosition(output.getSelectionEnd());
+					
+				} catch (BadLocationException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+        	}
+        });
+        
+        formatMenu.add(menuItemHighlight);
+        
+        
+      //Build fourth menu in the menu bar.
         reviewMenu = new JMenu("Review");
         reviewMenu.setMnemonic(KeyEvent.VK_R);
         reviewMenu.getAccessibleContext().setAccessibleDescription("Review Menu");
