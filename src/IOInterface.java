@@ -11,7 +11,15 @@ import java.util.*;
  */
 
 public class IOInterface extends WordRecommender {
-
+	
+	private boolean capitalizeNext = true;
+	/*
+	 * doubleQuote variable tracks whether a " has been used previously so to track whether a space should be added after the " or not.
+	 * doubleQuote variable removed for now as double quotation functionality currently not working. Java is interpreting " mark from input document as the end of the input.
+	 * Will need to systematize adding escape character before any quote mark detected in input before re-activating double quotation functionality. 
+	 */
+	//private boolean doubleQuote = false;
+	
 	/**
 	 * Constructor extending WordRecommender class. super used for class inheritance.
 	 * 
@@ -33,6 +41,47 @@ public class IOInterface extends WordRecommender {
 			end = checkDocument(docNameInput.nextLine().trim());
 		}
 		docNameInput.close();
+	}
+	
+	/**
+	 * Helper method for printing words to the output document. Contains logic for controlling whether to 
+	 * 
+	 * @param pw PrintWriter used for printing to document
+	 * @param word word to be printed to document
+	 * @param capitalize boolean for whether the first letter of the word should be capitalized
+	 * @param hasPunctuation boolean for whether the word is followed by punctuation
+	 * @param punctuationString String that contains punctuation to be appended to the word
+	 */
+	public void printWordToDoc(PrintWriter pw, String word, boolean capitalize, boolean hasPunctuation, String punctuationString) {
+		if (capitalize == true) {
+			char firstChar = word.charAt(0);
+			String strFirstChar = firstChar + "";
+			word = strFirstChar.toUpperCase() + word.substring(1);
+			this.capitalizeNext = false;
+		}
+		
+		String trailingSpace = " ";
+		
+		if (hasPunctuation == true) {
+			/*
+			 * removed until support for double quotation added back in.
+			if (punctuationString.equals("\"")){
+				this.doubleQuote = !this.doubleQuote;
+			}
+			if (this.doubleQuote == true) {
+				trailingSpace = "";
+			}
+			*/
+			
+			pw.print(word + punctuationString + trailingSpace);
+			if (punctuationString.equals(".") || punctuationString.contains("?") || punctuationString.contains("!") || punctuationString.equals("....")) {
+				this.capitalizeNext = true;
+			}
+		}
+		else {
+			pw.print(word + trailingSpace);
+		}
+		
 	}
 	
 	/**
@@ -74,39 +123,74 @@ public class IOInterface extends WordRecommender {
 				PrintWriter pw = new PrintWriter(fw);
 				Scanner userInput = new Scanner(System.in);
 				
+				String afterPunctuation = "";
+				
 				while (docScanner.hasNext()) {
-					String word = docScanner.next().toLowerCase();
+					String word;
+					if (afterPunctuation.equals("")) {
+						word = docScanner.next().toLowerCase();
+					}
+					else {
+						word = afterPunctuation;
+					}
+					
+					boolean punctuationFound = false;
+					String punctuation = "";
+					
 					/*
-					 * Checks for exact word matches in dictionary. Then checks for numbers in user document, and will pass them through unchanged.
+					 * Checks for exact word matches in dictionary. 
+					 * Then checks for numbers in user document; if a number is found, it will pass through unchanged and the while loop will skip to next word in the document.
 					 * 
 					 * TODO Punctuation and other pass-through (such as user-defined dictionary additions) would be added here. 
 					 * 
 					 * Then will check misspelled words and will provide alternate word suggestions
 					 */
+					if(PatternChecker.isBigInteger(word) == true)
+					{
+						printWordToDoc(pw, word, false, false, punctuation);
+						continue;
+					}
+					else if(PatternChecker.isBigDecimal(word) == true)
+					{
+						printWordToDoc(pw, word, false, false, punctuation);
+						continue;
+					}
 					
-					// add word count
-					int currentWordCount = analysis.getWordCount();
-					analysis.setWordCount(currentWordCount++);
+					/*
+					 * Detects if the word contains punctuation. If it does, saves the first and last index of the first continuous punctuation string in that word.
+					 * If the word contains characters after this index, the substring after this index is saved to afterPunctuation and is fed back into the outer
+					 * while-loop.
+					 * 
+					 * Example: "what?!hesaidthat..." 
+					 * The "?!" would be saved as the punctuation string, and "hesaidthat..." would be saved as afterPunctuation, and would then be sent through
+					 * the outer while-loop again.   
+					 */
+					int punctuationIndex = PatternChecker.detectPunctuation(word);
+					int firstPunctuationIndex = punctuationIndex;
+					int lastPunctuationIndex = -1;
+					while(punctuationIndex != -1) {
+						lastPunctuationIndex = punctuationIndex;
+						int nextPunctuationIndex = PatternChecker.detectPunctuation(word.substring(punctuationIndex) + 1);
+						if (nextPunctuationIndex != 0) {
+							break;
+						}
+						punctuationIndex++;
+					}
+					if (lastPunctuationIndex != -1) {punctuationFound = true;}
+					
+					if (punctuationFound == true) {
+						punctuation = word.substring(firstPunctuationIndex, lastPunctuationIndex);
+						afterPunctuation = word.substring(lastPunctuationIndex);
+						word = word.substring(0, firstPunctuationIndex);
+					}
+					else {
+						afterPunctuation = "";
+					}
+					
+					
 					
 					if (checkForExactWord(word) == true) {
-						// check whether line break is needed
-						formatter.setLineCharLength(formatter.getLineCharLength() + word.length() + 1);
-						formatter.addLineBreaks(pw);
-						pw.print(word + " ");
-					}
-					else if(NumberChecker.isBigInteger(word) == true)
-					{
-						// check whether line break is needed
-						formatter.setLineCharLength(formatter.getLineCharLength() + word.length() + 1);
-						formatter.addLineBreaks(pw);
-						pw.print(word + " ");
-					}
-					else if(NumberChecker.isBigDecimal(word) == true)
-					{
-						// check whether line break is needed
-						formatter.setLineCharLength(formatter.getLineCharLength() + word.length() + 1);
-						formatter.addLineBreaks(pw);
-						pw.print(word + " ");
+						printWordToDoc(pw, word, capitalizeNext, punctuationFound, punctuation);
 					}
 					else {
 						// need to figure out where formatter goes in this block
@@ -120,11 +204,11 @@ public class IOInterface extends WordRecommender {
 						if (possibleWords.size() >= 1) {
 							System.out.println("The following suggestions are available");
 							System.out.println(prettyPrint(possibleWords));
-							System.out.println("Press 'r' for replace, 'a' for accept as is, 't' for type in manually.");
+							System.out.println("Press 'r' for replace, 'a' for accept as is, 't' for type in manually, 'd' to add word to dictionary.");
 						}
 						else {
 							System.out.println("There are 0 suggestions in our dictionary for this word.");
-							System.out.println("Press 'a' for accept as is, 't' for type in manually.");	
+							System.out.println("Press 'a' for accept as is, 't' for type in manually, 'd' to add word to dictionary.");	
 							rCommandAllowed = false;
 						}
 						
@@ -146,12 +230,10 @@ public class IOInterface extends WordRecommender {
 									boolean repeatRCommand = true;								
 									while (repeatRCommand == true) {
 										String replacementNumber = userInput.nextLine();
-										if (NumberChecker.isInteger(replacementNumber) && Integer.parseInt(replacementNumber) > 0 && Integer.parseInt(replacementNumber) <= possibleWords.size()) {
-											// check whether line break is needed
-											formatter.setLineCharLength(formatter.getLineCharLength() + possibleWords.get(Integer.parseInt(replacementNumber) - 1).length() + 1);
-											formatter.addLineBreaks(pw);
+										if (PatternChecker.isInteger(replacementNumber) && Integer.parseInt(replacementNumber) > 0 && Integer.parseInt(replacementNumber) <= possibleWords.size()) {
 											
-											pw.print(possibleWords.get(Integer.parseInt(replacementNumber) - 1) + " ");
+											printWordToDoc(pw, possibleWords.get(Integer.parseInt(replacementNumber) - 1), capitalizeNext, punctuationFound, punctuation);
+											//pw.print(possibleWords.get(Integer.parseInt(replacementNumber) - 1) + " ");
 											repeatRCommand = false;
 										}
 										else {
@@ -162,12 +244,7 @@ public class IOInterface extends WordRecommender {
 
 								}
 								else if (command.trim().equals("a")) {
-									// check whether line break is needed
-									formatter.setLineCharLength(formatter.getLineCharLength() + word.length() + 1);
-									formatter.addLineBreaks(pw);
-									
-									pw.print(word + " ");
-
+									printWordToDoc(pw, word, capitalizeNext, punctuationFound, punctuation);
 								}
 								else if (command.trim().equals("t")) {
 									System.out.println("Please type the word that will be used as the replacement in the output file.");
@@ -176,25 +253,31 @@ public class IOInterface extends WordRecommender {
 										System.out.print("Input is empty. This will delete the word. Press enter again to confirm, or else re-enter replacement word: ");
 										correctedWord = userInput.nextLine();
 										if (!correctedWord.equals("")) {
-											// check whether line break is needed
-											formatter.setLineCharLength(formatter.getLineCharLength() + correctedWord.length() + 1);
-											formatter.addLineBreaks(pw);
-											
-											pw.print(correctedWord + " ");
+											printWordToDoc(pw, correctedWord, capitalizeNext, punctuationFound, punctuation);
+											//pw.print(correctedWord + " ");
 										}
 									}
 									else {
-										// check whether line break is needed
-										formatter.setLineCharLength(formatter.getLineCharLength() + correctedWord.length() + 1);
-										formatter.addLineBreaks(pw);
-										
-										pw.print(correctedWord + " ");
+										printWordToDoc(pw, correctedWord, capitalizeNext, punctuationFound, punctuation);
+										//pw.print(correctedWord + " ");
 									}								
+								}
+								else if(command.trim().equals("d")) {
+									printWordToDoc(pw, word, capitalizeNext, punctuationFound, punctuation);
+									getDictionary().addWordToDictionaries(word);
+									updateDictionaries();
+									// Below code will update dictionary text file
+									File dictionaryDocument = new File(getFileName());
+									FileWriter fwDictionary = new FileWriter(dictionaryDocument, true);
+									PrintWriter pwDictionary = new PrintWriter(fwDictionary);
+									pwDictionary.println(word);
+									pwDictionary.close();
+									fwDictionary.close();
+									
 								}
 								else if (command.contentEquals("")) {
 									System.out.print("Please select a command ");
 									repeat = true;
-
 								}
 								else {
 									repeat = true;
@@ -212,8 +295,7 @@ public class IOInterface extends WordRecommender {
 				}
 				userInput.close();
 				pw.flush();
-				
-				
+							
 				pw.close();
 				fw.close();
 				
