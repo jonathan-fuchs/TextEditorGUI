@@ -45,6 +45,7 @@ public class TextDocumentUI {
     int speed = 300;
     Timer timer;
     boolean alwaysOnTop = false;   
+    boolean newDocument = true;
     
     File document;
     
@@ -81,11 +82,11 @@ public class TextDocumentUI {
         menuItemSave.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e)
         	{
-        		if (!documentName.equals("Document Editor GUI")) {
+        		if (newDocument == false) {
         			saveDocument();
         		}
         		else {
-        			saveDocumentAs();
+        			createPopUpWindow("Save As");
         		}
         		
         		
@@ -175,20 +176,40 @@ public class TextDocumentUI {
         return menuBar;
     }
     
+    /**
+     * Helper method for createPopUpWindow
+     * 
+     * @param command
+     */
+    
+    public void handlePopUpWindowCommands(String command) {
+    	if (command.equals("Open")) {
+    		Path findDoc = FileSystems.getDefault().getPath(documentName);
+    		if(Files.exists(findDoc)) {
+        		newDocument = false;
+    			openDocument();
+    			popUpWindow.dispose();
+    		}
+    		else {
+    			popUpWindowTextArea.setText("File not found. Please re-enter");
+    		}
+
+    	}
+    	else if (command.equals("Save As")) {
+    		newDocument = false;
+    		saveDocumentAs();
+    		popUpWindow.dispose();
+    	}
+    	
+    }
+    
     public void createPopUpWindow(String command) {
     	ActionListener openButtonPressed = new ActionListener() {
     		@Override
     		public void actionPerformed(ActionEvent e) {
     			documentName = popUpWindowTextArea.getText();
 
-    			if (command.equals("Open")) {
-    				openDocument();
-    			}
-    			else if (command.equals("Save As")) {
-    				saveDocumentAs();
-    			}
-    			
-    			popUpWindow.dispose();
+    			handlePopUpWindowCommands(command);
     		}
     	};
 
@@ -198,14 +219,7 @@ public class TextDocumentUI {
     				documentName = popUpWindowTextArea.getText();
     				documentName = documentName.substring(0, documentName.length() - 1);
 
-    				if (command.equals("Open")) {
-        				openDocument();
-        			}
-    				else if (command.equals("Save As")) {
-        				saveDocumentAs();
-        			}
-
-    				popUpWindow.dispose();
+    				handlePopUpWindowCommands(command);
     			}
     		}
     		public void keyPressed(KeyEvent e) {}
@@ -213,7 +227,7 @@ public class TextDocumentUI {
     	}
 
     	popUpWindow = new JDialog(frame, "Type in file name");
-    	popUpWindow.setSize(218, 70);
+    	popUpWindow.setSize(318, 70);
     	popUpWindow.setVisible(true);
     	popUpWindow.setResizable(false);
     	popUpWindow.setAlwaysOnTop(true);
@@ -244,26 +258,28 @@ public class TextDocumentUI {
         
     public void openDocument() {
       	
+    	
     	documentText = "";
+
     	document = new File(documentName);
+
     	try {
-			Scanner docScanner = new Scanner(document);
-			
-			while (docScanner.hasNextLine()) {
-				documentText += docScanner.nextLine() + "\n";				
-			}
-			
-			docScanner.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	
+    		Scanner docScanner = new Scanner(document);
+
+    		while (docScanner.hasNextLine()) {
+    			documentText += docScanner.nextLine() + "\n";				
+    		}
+
+    		docScanner.close();
+    	} catch (FileNotFoundException e) {
+    		// TODO Auto-generated catch block
+    		e.printStackTrace();
+    	}
+
     	//frame.setSize(0, 0);
-    	
+
     	//createAndShowGUI();
     	output.setText(documentText);
-    	
 
     }
     
@@ -281,6 +297,7 @@ public class TextDocumentUI {
 			FileWriter fw = new FileWriter(documentName, true);
 			PrintWriter pw = new PrintWriter(fw);
 			pw.print(output.getText());
+			pw.flush();
 			pw.close();
 			fw.close();
 			
@@ -294,11 +311,24 @@ public class TextDocumentUI {
     
     public void saveDocumentAs() {
     	//TODO
+    	try {
+			FileWriter fw = new FileWriter(documentName, true);
+			PrintWriter pw = new PrintWriter(fw);
+			pw.print(output.getText());
+			pw.flush();
+			pw.close();
+			fw.close();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	
     }
     
     public void newDocument() {
     	documentName = "Document Editor GUI";
+    	newDocument = true;
     	output.setText("");
     	
     }
