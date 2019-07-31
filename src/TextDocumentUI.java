@@ -6,6 +6,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JMenuBar;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
+import javax.swing.text.DefaultEditorKit;
 
 import java.io.*;
 import java.nio.file.FileSystems;
@@ -17,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -51,7 +53,10 @@ public class TextDocumentUI {
     public JMenuBar createMenuBar() {
         JMenuBar menuBar;
         JMenu fileMenu, editMenu, reviewMenu;
-        JMenuItem menuItemNew, menuItemSave, menuItemSaveAs, menuItemOpen, menuItemSelectAll, menuItemSpellCheck, menuItemExit;
+        JMenuItem menuItemNew, menuItemSave, menuItemSaveAs, menuItemOpen, menuItemCopy, menuItemCut, menuItemPaste, menuItemSelectAll, menuItemSpellCheck, menuItemExit;
+        Action copy = new DefaultEditorKit.CopyAction();
+        Action cut = new DefaultEditorKit.CutAction();
+        Action paste = new DefaultEditorKit.PasteAction();
  
         //Create the menu bar.
         menuBar = new JMenuBar();
@@ -141,9 +146,28 @@ public class TextDocumentUI {
       //Build second menu in the menu bar.
         
         editMenu = new JMenu("Edit");
-        editMenu.setMnemonic(KeyEvent.VK_A);
+        editMenu.setMnemonic(KeyEvent.VK_E);
         editMenu.getAccessibleContext().setAccessibleDescription("Edit Menu");
         menuBar.add(editMenu);
+        
+        menuItemCopy = new JMenuItem(copy);
+        menuItemCopy.setMnemonic(KeyEvent.VK_C);
+        menuItemCopy.setText("Copy");
+        menuItemCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+        menuItemCopy.getAccessibleContext().setAccessibleDescription("Copies selected text in the current document");
+       
+        menuItemCut = new JMenuItem(cut);
+        menuItemCut.setMnemonic(KeyEvent.VK_T);
+        menuItemCut.setText("Cut");
+        menuItemCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+        menuItemCut.getAccessibleContext().setAccessibleDescription("Cuts selected text in the current document");
+        
+        menuItemPaste = new JMenuItem(paste);
+        menuItemPaste.setMnemonic(KeyEvent.VK_P);
+        menuItemPaste.setText("Paste");
+        menuItemPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+        menuItemPaste.getAccessibleContext().setAccessibleDescription("Pastes selected text in the current document");
+        
         
         menuItemSelectAll = new JMenuItem("Select All", KeyEvent.VK_A);
         menuItemSelectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
@@ -155,6 +179,10 @@ public class TextDocumentUI {
         	}
         });
         
+        editMenu.add(menuItemCopy);
+        editMenu.add(menuItemCut);
+        editMenu.add(menuItemPaste);
+        editMenu.addSeparator();
         editMenu.add(menuItemSelectAll);
         
         
@@ -337,7 +365,7 @@ public class TextDocumentUI {
     	output.setText("");
     	
     }
-    
+  
     public void checkSpelling() {
     	System.out.println("On my TODO list!");
     }
