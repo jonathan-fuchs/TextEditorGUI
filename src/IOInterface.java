@@ -44,6 +44,7 @@ public class IOInterface extends WordRecommender {
 	
 	public boolean checkDocument(String docName) {
 		SpellingAnalysis analysis = new SpellingAnalysis();
+		TextFormatting formatter = new TextFormatting();
 		File userDocument = new File(docName);
 		String outputDocumentName;
 		/*
@@ -88,17 +89,28 @@ public class IOInterface extends WordRecommender {
 					analysis.setWordCount(currentWordCount++);
 					
 					if (checkForExactWord(word) == true) {
+						// check whether line break is needed
+						formatter.setLineCharLength(formatter.getLineCharLength() + word.length() + 1);
+						formatter.addLineBreaks();
 						pw.print(word + " ");
 					}
 					else if(NumberChecker.isBigInteger(word) == true)
 					{
+						// check whether line break is needed
+						formatter.setLineCharLength(formatter.getLineCharLength() + word.length() + 1);
+						formatter.addLineBreaks();
 						pw.print(word + " ");
 					}
 					else if(NumberChecker.isBigDecimal(word) == true)
 					{
+						// check whether line break is needed
+						formatter.setLineCharLength(formatter.getLineCharLength() + word.length() + 1);
+						formatter.addLineBreaks();
 						pw.print(word + " ");
 					}
 					else {
+						// need to figure out where formatter goes in this block
+						
 						/*
 						 * getWordSuggestions called here. Adjust variables to adjust set of words retrieved from dictionary.
 						 */
@@ -135,6 +147,10 @@ public class IOInterface extends WordRecommender {
 									while (repeatRCommand == true) {
 										String replacementNumber = userInput.nextLine();
 										if (NumberChecker.isInteger(replacementNumber) && Integer.parseInt(replacementNumber) > 0 && Integer.parseInt(replacementNumber) <= possibleWords.size()) {
+											// check whether line break is needed
+											formatter.setLineCharLength(formatter.getLineCharLength() + possibleWords.get(Integer.parseInt(replacementNumber) - 1).length() + 1);
+											formatter.addLineBreaks();
+											
 											pw.print(possibleWords.get(Integer.parseInt(replacementNumber) - 1) + " ");
 											repeatRCommand = false;
 										}
@@ -146,6 +162,10 @@ public class IOInterface extends WordRecommender {
 
 								}
 								else if (command.trim().equals("a")) {
+									// check whether line break is needed
+									formatter.setLineCharLength(formatter.getLineCharLength() + word.length() + 1);
+									formatter.addLineBreaks();
+									
 									pw.print(word + " ");
 
 								}
@@ -156,10 +176,18 @@ public class IOInterface extends WordRecommender {
 										System.out.print("Input is empty. This will delete the word. Press enter again to confirm, or else re-enter replacement word: ");
 										correctedWord = userInput.nextLine();
 										if (!correctedWord.equals("")) {
+											// check whether line break is needed
+											formatter.setLineCharLength(formatter.getLineCharLength() + correctedWord.length() + 1);
+											formatter.addLineBreaks();
+											
 											pw.print(correctedWord + " ");
 										}
 									}
 									else {
+										// check whether line break is needed
+										formatter.setLineCharLength(formatter.getLineCharLength() + correctedWord.length() + 1);
+										formatter.addLineBreaks();
+										
 										pw.print(correctedWord + " ");
 									}								
 								}
