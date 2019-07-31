@@ -17,7 +17,7 @@ import java.util.*;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -41,7 +41,7 @@ public class TextDocumentUI {
 
 	private String documentText;
 	private JDialog popUpWindow;
-	private JTextArea popUpWindowTextArea;
+	private JTextField popUpWindowTextField;
     
 	private int pause = 800;
 	private int speed = 300;
@@ -216,6 +216,7 @@ public class TextDocumentUI {
      */
     
     public void handlePopUpWindowCommands(String command) {
+    	documentName = popUpWindowTextField.getText();
     	if (command.equals("Open")) {
     		Path findDoc = FileSystems.getDefault().getPath(documentName);
     		if(Files.exists(findDoc)) {
@@ -224,7 +225,7 @@ public class TextDocumentUI {
     			popUpWindow.dispose();
     		}
     		else {
-    			popUpWindowTextArea.setText("File not found. Please re-enter");
+    			popUpWindowTextField.setText("File not found. Please re-enter");
     		}
 
     	}
@@ -240,8 +241,6 @@ public class TextDocumentUI {
     	ActionListener openButtonPressed = new ActionListener() {
     		@Override
     		public void actionPerformed(ActionEvent e) {
-    			documentName = popUpWindowTextArea.getText();
-
     			handlePopUpWindowCommands(command);
     		}
     	};
@@ -249,9 +248,6 @@ public class TextDocumentUI {
     	class demoKL implements KeyListener {
     		public void keyTyped(KeyEvent e) {
     			if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-    				documentName = popUpWindowTextArea.getText();
-    				documentName = documentName.substring(0, documentName.length() - 1);
-
     				handlePopUpWindowCommands(command);
     			}
     		}
@@ -268,15 +264,13 @@ public class TextDocumentUI {
 
     	Container c1 = popUpWindow.getContentPane();
 		c1.setSize(200, 70);
-		popUpWindowTextArea = new JTextArea();
-		popUpWindowTextArea.setWrapStyleWord(true);
-		popUpWindowTextArea.setLineWrap(true);
-		popUpWindowTextArea.setLocation(0, 0);
-		popUpWindowTextArea.setBounds(0, 0, 150, 70);
-		popUpWindowTextArea.setRows(2);
+		popUpWindowTextField = new JTextField(20);
+		popUpWindowTextField.setLocation(0, 0);
+		popUpWindowTextField.setSize(200, 70);
+		popUpWindowTextField.setVisible(true);
 		demoKL kl = new demoKL();
-		popUpWindowTextArea.addKeyListener(kl);
-		c1.add(popUpWindowTextArea, BorderLayout.WEST);
+		popUpWindowTextField.addKeyListener(kl);
+		c1.add(popUpWindowTextField, BorderLayout.WEST);
 		
 		JButton button = new JButton(command);
 		button.setLocation(150, 0);
