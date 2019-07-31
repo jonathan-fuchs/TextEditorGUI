@@ -226,6 +226,8 @@ public class TextDocumentUI {
     		}
     		else {
     			popUpWindowTextField.setText("File not found. Please re-enter");
+    			popUpWindowTextField.requestFocus();
+    			popUpWindowTextField.selectAll();
     		}
 
     	}
