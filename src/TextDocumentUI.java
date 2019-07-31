@@ -168,6 +168,12 @@ public class TextDocumentUI {
         menuItemSpellCheck = new JMenuItem("Spell Check", KeyEvent.VK_L);
         menuItemSpellCheck.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, ActionEvent.CTRL_MASK));
         menuItemSpellCheck.getAccessibleContext().setAccessibleDescription("Spell check the current document");
+        menuItemSpellCheck.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e)
+        	{
+        		checkSpelling();
+        	}
+        });
         
         reviewMenu.add(menuItemSpellCheck);
           
@@ -330,6 +336,10 @@ public class TextDocumentUI {
     	newDocument = true;
     	output.setText("");
     	
+    }
+    
+    public void checkSpelling() {
+    	System.out.println("On my TODO list!");
     }
     
     public Container createContentPane() {
