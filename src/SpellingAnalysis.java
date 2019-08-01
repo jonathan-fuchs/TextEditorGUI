@@ -69,14 +69,14 @@ public class SpellingAnalysis {
 		
 		
 		for (char letter : lettersInWord) {
-			if (letter == aeiou || letter == aeiou || letter == aeiou || letter == aeiou ||) {
+			//if (letter == aeiou || letter == aeiou || letter == aeiou || letter == aeiou ||) {
 				
-			}
+			//}
 		}
 	}
 	
 	public int getSentenceLength() {
-		
+		return 0;
 	}
 	
 	
@@ -117,9 +117,10 @@ public class SpellingAnalysis {
 //		
 //	}
 //	
-//	public int totalWordsMisspelled() {
-//		
-//	}
+public int totalWordsMisspelled() {
+	return 0;
+}
+
 
 	
 	
