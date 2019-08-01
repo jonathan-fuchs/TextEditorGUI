@@ -43,8 +43,9 @@ public class TextDocumentUI {
 	private JScrollPane scrollPane;
 	private String documentName = "Untitled Document";
 	private String titleBar = "Document Editor GUI";
-	JMenuBar menuBar;
-	JMenu currentFile;
+	private JMenuBar menuBar;
+	private JMenu currentFile;
+	private Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
 	private String documentText;
 	private JDialog popUpWindow;
@@ -325,6 +326,11 @@ public class TextDocumentUI {
     	}
 
     	popUpWindow = new JDialog(frame, "Type in file name");
+    	
+    	//popUpWindow.setLocationRelativeTo(frame);
+    	popUpWindow.setLocation(dim.width/2-popUpWindow.getSize().width/2 - 200, dim.height/2-popUpWindow.getSize().height/2 - 200);
+    	
+    	
     	popUpWindow.setSize(318, 70);
     	popUpWindow.setVisible(true);
     	popUpWindow.setResizable(false);
@@ -461,6 +467,9 @@ public class TextDocumentUI {
     // was private, made public so can access from IOInterface
     public void createAndShowGUI() {
     	frame = new JFrame(titleBar);
+    	
+    	//frame.setLocationRelativeTo(null);
+    	frame.setLocation(dim.width/2-frame.getSize().width/2 - 400, dim.height/2-frame.getSize().height/2 - 400);
     	
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
