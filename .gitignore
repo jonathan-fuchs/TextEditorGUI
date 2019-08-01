@@ -1,4 +1,6 @@
 bin/
+src/src/
+src/.gitignore
 .settings/
 .classpath
 .project
