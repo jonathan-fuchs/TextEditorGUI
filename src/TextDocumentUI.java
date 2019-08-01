@@ -53,7 +53,7 @@ public class TextDocumentUI {
 	private boolean alwaysOnTop = false;   
 	private boolean newDocument = true;
 	private File document;
-	private Highlighter painter;
+	private DefaultHighlighter highlighter;
     
     public JMenuBar createMenuBar() {
         JMenuBar menuBar;
@@ -207,7 +207,8 @@ public class TextDocumentUI {
         menuItemHighlight.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e)
         	{
-        		painter = output.getHighlighter();
+        		highlighter = (DefaultHighlighter)output.getHighlighter();
+        		highlighter.setDrawsLayeredHighlights(false);
         		try {
         			//Highlight[] currentHighlights = painter.getHighlights();
         			
@@ -217,7 +218,7 @@ public class TextDocumentUI {
         				
         			//}
         			
-					painter.addHighlight(output.getSelectionStart(), output.getSelectionEnd(), new DefaultHighlighter.DefaultHighlightPainter(new Color(0xFAED27)));
+        			highlighter.addHighlight(output.getSelectionStart(), output.getSelectionEnd(), new DefaultHighlighter.DefaultHighlightPainter(new Color(0xFAED27)));
 					output.setCaretPosition(output.getSelectionEnd());
 					
 				} catch (BadLocationException e1) {
@@ -232,8 +233,8 @@ public class TextDocumentUI {
         menuItemRemoveAllHighlights.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e)
         	{
-        		painter = output.getHighlighter();
-        		painter.removeAllHighlights();
+        		highlighter = (DefaultHighlighter)output.getHighlighter();
+        		highlighter.removeAllHighlights();
         	}
         });
         
