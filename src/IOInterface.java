@@ -92,6 +92,8 @@ public class IOInterface extends WordRecommender {
 	 */
 	
 	public boolean checkDocument(String docName) {
+		SpellingAnalysis analysis = new SpellingAnalysis();
+		TextFormatting formatter = new TextFormatting();
 		File userDocument = new File(docName);
 		String outputDocumentName;
 		/*
@@ -191,6 +193,8 @@ public class IOInterface extends WordRecommender {
 						printWordToDoc(pw, word, capitalizeNext, punctuationFound, punctuation);
 					}
 					else {
+						// need to figure out where formatter goes in this block
+						
 						/*
 						 * getWordSuggestions called here. Adjust variables to adjust set of words retrieved from dictionary.
 						 */
