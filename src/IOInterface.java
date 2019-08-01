@@ -1,3 +1,4 @@
+import java.awt.EventQueue;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -28,6 +29,48 @@ public class IOInterface extends WordRecommender {
 	
 	public IOInterface(String fileName) {
 		super(fileName);
+	}
+	
+	public void askForInputMethod() {
+		
+		Scanner IOMethod = new Scanner(System.in);
+		System.out.print("Enter 'o' for old interface, 'n' for new interface: ");
+		
+		boolean repeat = true;
+		
+		while (repeat == true) {
+			String io = IOMethod.nextLine().trim();
+			
+			if (io.equals("o")) {
+				repeat = false;
+				askForDocument();
+			
+				
+			}
+			else if (io.equals("n")) {
+
+				repeat = false;
+				TextDocumentUI ui = new TextDocumentUI();
+		    	
+		        EventQueue.invokeLater(new Runnable() {
+		            public void run() {
+		                ui.createAndShowGUI();  
+		            }
+		        });
+
+			}
+			else {
+				
+				System.out.print("Input not understood, please re-enter: ");
+				
+			}
+			
+		}
+		
+		
+		
+		
+		IOMethod.close();
 	}
 
 	/**
