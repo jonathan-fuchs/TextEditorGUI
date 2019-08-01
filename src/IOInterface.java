@@ -11,7 +11,68 @@ import java.util.*;
  */
 
 public class IOInterface extends WordRecommender {
+	
+	/*
+	 * Counting Instance Variables with Getters
+	 */
+	private int numTotalWords;
+	private int numCorrectWords;
+	private double percCorrectWords;
+	private int charCounts;
+	private double averageConsonantCount;
+	private double averageVowelCount;
+	private int totalVowelCount;
+	private int totalConsonantCount;
+	
+	public double getAverageConsonantCount() {
+		return averageConsonantCount;
+	}
 
+	public double getAverageVowelCount() {
+		return averageVowelCount;
+	}
+
+	public int getTotalVowelCount() {
+		return totalVowelCount;
+	}
+
+	public int getTotalConsonantCount() {
+		return totalConsonantCount;
+	}
+
+	public int getNumTotalWords() {
+		return numTotalWords;
+	}
+
+	public void setNumTotalWords(int numTotalWords) {
+		this.numTotalWords = numTotalWords;
+	}
+
+	public int getNumCorrectWords() {
+		return numCorrectWords;
+	}
+
+	public void setNumCorrectWords(int numCorrectWords) {
+		this.numCorrectWords = numCorrectWords;
+	}
+
+	public double getPercCorrectWords() {
+		return percCorrectWords;
+	}
+
+	public void setPercCorrectWords(double percCorrectWords) {
+		this.percCorrectWords = percCorrectWords;
+	}
+
+	public int getCharCounts() {
+		return charCounts;
+	}
+
+	public void setCharCounts(int charCounts) {
+		this.charCounts = charCounts;
+	}
+
+	
 	/**
 	 * Constructor extending WordRecommender class. super used for class inheritance.
 	 * 
@@ -45,6 +106,7 @@ public class IOInterface extends WordRecommender {
 	public boolean checkDocument(String docName) {
 		File userDocument = new File(docName);
 		String outputDocumentName;
+		
 		/*
 		 * Checks if user file has a file extension. If yes, appends "_chk" before the file extension, else it appends "_chk" to the end of the file name.
 		 */
@@ -81,7 +143,30 @@ public class IOInterface extends WordRecommender {
 					 * 
 					 * Then will check misspelled words and will provide alternate word suggestions
 					 */
+					
+					
+					/*
+					 * Begins Total Word and Character analysis
+					 */
+					numTotalWords++;
+					charCounts = charCounts + word.length();
+					
+					/*
+					 * Vowel and Consonant Analysis
+					 */
+					
+					vowelConsonantAnalysis analysis = new vowelConsonantAnalysis();
+					analysis.vowelConsontantCounts(word);
+					analysis.calculateAverageVowelandConsonantCounts(analysis.getConsonantCounts());
+					averageConsonantCount = analysis.getAverageCounts();
+					analysis.calculateAverageVowelandConsonantCounts(analysis.getVowelCounts());
+					averageVowelCount = analysis.getAverageCounts();
+					totalConsonantCount = analysis.getTotalConsonantCount();
+					totalVowelCount = analysis.getTotalVowelCount();
+
+					
 					if (checkForExactWord(word) == true) {
+						numCorrectWords++;
 						pw.print(word + " ");
 					}
 					else if(NumberChecker.isBigInteger(word) == true)
@@ -140,6 +225,7 @@ public class IOInterface extends WordRecommender {
 
 								}
 								else if (command.trim().equals("a")) {
+									numCorrectWords++;
 									pw.print(word + " ");
 
 								}
@@ -169,6 +255,8 @@ public class IOInterface extends WordRecommender {
 
 							}
 						}
+						
+								
 						System.out.println();
 						System.out.println();
 						System.out.println();						
@@ -176,6 +264,7 @@ public class IOInterface extends WordRecommender {
 					}
 					
 				}
+				percCorrectWords = numCorrectWords/numTotalWords;
 				userInput.close();
 				pw.flush();
 				
