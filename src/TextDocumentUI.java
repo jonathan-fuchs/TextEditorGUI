@@ -9,7 +9,7 @@ import javax.swing.WindowConstants;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.DefaultHighlighter;
-import javax.swing.text.Highlighter;
+//import javax.swing.text.Highlighter;
 //import javax.swing.text.Highlighter.Highlight;
 
 import java.io.*;
@@ -41,7 +41,10 @@ public class TextDocumentUI {
 	private JFrame frame;
 	private JTextPane output;
 	private JScrollPane scrollPane;
-	private String documentName = "Document Editor GUI";
+	private String documentName = "Untitled Document";
+	private String titleBar = "Document Editor GUI";
+	JMenuBar menuBar;
+	JMenu currentFile;
 
 	private String documentText;
 	private JDialog popUpWindow;
@@ -56,7 +59,6 @@ public class TextDocumentUI {
 	private DefaultHighlighter highlighter;
     
     public JMenuBar createMenuBar() {
-        JMenuBar menuBar;
         JMenu fileMenu, editMenu, formatMenu, reviewMenu;
         JMenuItem menuItemNew, menuItemSave, menuItemSaveAs, menuItemOpen, menuItemCopy, menuItemCut, menuItemPaste, menuItemSelectAll, menuItemSpellCheck, menuItemExit, menuItemHighlight, menuItemRemoveAllHighlights;
         Action copy = new DefaultEditorKit.CopyAction();
@@ -259,6 +261,16 @@ public class TextDocumentUI {
         });
         
         reviewMenu.add(menuItemSpellCheck);
+        
+        // Fifth menu in menu bar is just a label
+        currentFile = new JMenu(documentName);
+        
+        menuBar.add(currentFile);
+        
+        //System.out.println(menuBar.getComponent(4));
+        
+        //.getComponent(4).setText("hi");
+        
           
         
         return menuBar;
@@ -364,7 +376,8 @@ public class TextDocumentUI {
 
     	//createAndShowGUI();
     	output.setText(documentText);
-
+    	currentFile.setText(documentName);
+        menuBar.updateUI();
     }
     
     public void saveDocument() {
@@ -402,7 +415,8 @@ public class TextDocumentUI {
 			pw.flush();
 			pw.close();
 			fw.close();
-			
+			currentFile.setText(documentName);
+	        menuBar.updateUI();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -411,10 +425,11 @@ public class TextDocumentUI {
     }
     
     public void newDocument() {
-    	documentName = "Document Editor GUI";
+    	documentName = "Untitled Document";
     	newDocument = true;
     	output.setText("");
-    	
+    	currentFile.setText(documentName);
+        menuBar.updateUI();
     }
   
     public void checkSpelling() {
@@ -445,7 +460,7 @@ public class TextDocumentUI {
     
     // was private, made public so can access from IOInterface
     public void createAndShowGUI() {
-    	frame = new JFrame(documentName);
+    	frame = new JFrame(titleBar);
     	
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
