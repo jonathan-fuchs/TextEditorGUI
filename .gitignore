@@ -1,0 +1,13 @@
+bin/
+.settings/
+.classpath
+.project
+src/textSample.txt
+src/textSample_chk.txt
+src/adamCRCs_chk.txt
+src/engDictionary.txt
+test.txt
+test_chk.txt
+test2.txt
+test2_chk.txt
+engDictionary_backup.txt
