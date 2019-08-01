@@ -26,8 +26,7 @@ public class WordRecommender {
 	public WordRecommender (String fileName) {
 		this.fileName = fileName;
 		this.dictionary = new Dictionary(fileName);
-		this.dictionaryWords = dictionary.getWordDictionary();
-		this.dictionaryByWordLength = dictionary.getWordByLengthDictionary();
+		updateDictionaries();
 	}
 	
 	/**
@@ -279,12 +278,25 @@ public class WordRecommender {
 	}
 	
 	/**
+	 * getter method for Dictionary instance dictionary
+	 * 
+	 * @return dictionary;
+	 */
+	public Dictionary getDictionary () {
+		return dictionary;
+	}
+	
+	public void updateDictionaries() {
+		this.dictionaryWords = dictionary.getWordDictionary();
+		this.dictionaryByWordLength = dictionary.getWordByLengthDictionary();
+	}
+	
+	/**
 	 * Method for checking if an individual word from the user-supplied document is in the dictionary  
 	 * 
 	 * @param word word being checked
 	 * @return boolean; true if word was found, false if word was not found
 	 */
-	
 	public boolean checkForExactWord(String word) {
 		if (dictionaryWords.get(word) != null){
 			return true;

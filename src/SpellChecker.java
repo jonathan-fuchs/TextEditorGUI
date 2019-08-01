@@ -16,6 +16,6 @@ public class SpellChecker {
 	
 	public static void main(String[] args) {		
 		IOInterface instance = new IOInterface("engDictionary.txt");		
-		instance.askForDocument();	
+		instance.askForInputMethod();	
 	}
 }

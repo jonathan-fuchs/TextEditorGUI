@@ -1,0 +1,62 @@
+Text Formatting
+	Line Breaks
+	Grammar Check
+	
+Analysis
+	Good Spelling Check
+	Readability Score
+	Syllable Count
+	
+
+	
+CRCs -- CRCs -- CRCs
+
+LINE BREAKS
+
+TextFormatting
+	Responsibilities
+		storeWordBeforeLineBreak
+		storeWordAfterLineBreak
+		insertLineBreak
+		
+	Collaborators
+		IOInterface
+
+
+GRAMMAR CHECK
+
+GrammarCheck
+	Responsibilities
+		
+		
+	Collaborators
+		
+
+GOOD SPELLING CHECK
+
+SpellingAnalysis
+	Responsibilities
+		percentWordsSpelledCorrectly
+		percentWordedMisspelledInDocument
+		percentWordsRequiringManualEntry
+		percentWordsFromSuggestions
+		totalWordsMisspelled
+
+		
+	Collaborators
+		WordRecommender
+		IOInterface
+		
+
+READABILITY
+
+ReadabilityAnalysis
+	Responsibilities
+		syllableCount
+		calcAveSentenceLength
+		calcAveWordLength
+		readability
+		
+	Collaborators
+		WordRecommender
+		IOInterface

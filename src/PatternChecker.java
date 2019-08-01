@@ -1,5 +1,6 @@
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.regex.*;
 
 /**
  * Class containing methods for determining whether an input string is a number.
@@ -10,7 +11,7 @@ import java.math.BigInteger;
  * @version 1.0
  * @since 1.0
  */
-public class NumberChecker {
+public class PatternChecker {
 
 	/**
 	 * Method for determining if string input is an integer.
@@ -61,5 +62,24 @@ public class NumberChecker {
 	        return false;
 	    }
 	    return true;
+	}
+
+	/**
+	 * Method for detecting punctuation in the document. 
+	 * 
+	 * TODO add handling for double and single quotation marks
+	 * Pattern will then be: "[,.!?\\-\"\']"
+	 * 
+	 * @param str string to be checked for punctuation
+	 * @return -1 if no punctuation found, else the first index of a punctuation mark
+	 */
+	public static int detectPunctuation(String str) {
+		Pattern pattern = Pattern.compile("[,.!?\\-]");
+		Matcher matcher = pattern.matcher(str); 
+		
+		if (matcher.find() == false) {
+			return -1;
+		}
+		return matcher.start();
 	}
 }

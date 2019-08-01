@@ -80,7 +80,6 @@ public class IOInterface extends WordRecommender {
 	public void setCharCounts(int charCounts) {
 		this.charCounts = charCounts;
 	}
-
 	
 	/**
 	 * Constructor extending WordRecommender class. super used for class inheritance.
@@ -90,6 +89,48 @@ public class IOInterface extends WordRecommender {
 	
 	public IOInterface(String fileName) {
 		super(fileName);
+	}
+	
+	public void askForInputMethod() {
+		
+		Scanner IOMethod = new Scanner(System.in);
+		System.out.print("Enter 'o' for old interface, 'n' for new interface: ");
+		
+		boolean repeat = true;
+		
+		while (repeat == true) {
+			String io = IOMethod.nextLine().trim();
+			
+			if (io.equals("o")) {
+				repeat = false;
+				askForDocument();
+			
+				
+			}
+			else if (io.equals("n")) {
+
+				repeat = false;
+				TextDocumentUI ui = new TextDocumentUI();
+		    	
+		        EventQueue.invokeLater(new Runnable() {
+		            public void run() {
+		                ui.createAndShowGUI();  
+		            }
+		        });
+
+			}
+			else {
+				
+				System.out.print("Input not understood, please re-enter: ");
+				
+			}
+			
+		}
+		
+		
+		
+		
+		IOMethod.close();
 	}
 
 	public void askForInputMethod() {
@@ -186,6 +227,47 @@ public class IOInterface extends WordRecommender {
 	}
 	
 	/**
+	 * Helper method for printing words to the output document. Contains logic for controlling whether to 
+	 * 
+	 * @param pw PrintWriter used for printing to document
+	 * @param word word to be printed to document
+	 * @param capitalize boolean for whether the first letter of the word should be capitalized
+	 * @param hasPunctuation boolean for whether the word is followed by punctuation
+	 * @param punctuationString String that contains punctuation to be appended to the word
+	 */
+	public void printWordToDoc(PrintWriter pw, String word, boolean capitalize, boolean hasPunctuation, String punctuationString) {
+		if (capitalize == true) {
+			char firstChar = word.charAt(0);
+			String strFirstChar = firstChar + "";
+			word = strFirstChar.toUpperCase() + word.substring(1);
+			this.capitalizeNext = false;
+		}
+		
+		String trailingSpace = " ";
+		
+		if (hasPunctuation == true) {
+			/*
+			 * removed until support for double quotation added back in.
+			if (punctuationString.equals("\"")){
+				this.doubleQuote = !this.doubleQuote;
+			}
+			if (this.doubleQuote == true) {
+				trailingSpace = "";
+			}
+			*/
+			
+			pw.print(word + punctuationString + trailingSpace);
+			if (punctuationString.equals(".") || punctuationString.contains("?") || punctuationString.contains("!") || punctuationString.equals("....")) {
+				this.capitalizeNext = true;
+			}
+		}
+		else {
+			pw.print(word + trailingSpace);
+		}
+		
+	}
+	
+	/**
 	 * Central method for spell-checking user-provided document. Accessed via askForDocument() method.
 	 * 
 	 * @param docName user provided file name for document to be spell checked
@@ -226,7 +308,7 @@ public class IOInterface extends WordRecommender {
 				Scanner userInput = new Scanner(System.in);
 				
 				String afterPunctuation = "";
-
+				
 				while (docScanner.hasNext()) {
 					String word;
 					if (afterPunctuation.equals("")) {
@@ -240,12 +322,14 @@ public class IOInterface extends WordRecommender {
 					String punctuation = "";
 
 					/*
-					 * Checks for exact word matches in dictionary. Then checks for numbers in user document, and will pass them through unchanged.
+					 * Checks for exact word matches in dictionary. 
+					 * Then checks for numbers in user document; if a number is found, it will pass through unchanged and the while loop will skip to next word in the document.
 					 * 
 					 * TODO Punctuation and other pass-through (such as user-defined dictionary additions) would be added here. 
 					 * 
 					 * Then will check misspelled words and will provide alternate word suggestions
 					 */
+
 					
 					
 					/*
@@ -257,7 +341,6 @@ public class IOInterface extends WordRecommender {
 					/*
 					 * Vowel and Consonant Analysis
 					 */
-					
 					vowelConsonantAnalysis analysis = new vowelConsonantAnalysis();
 					analysis.vowelConsontantCounts(word);
 					analysis.calculateAverageVowelandConsonantCounts(analysis.getConsonantCounts());
@@ -268,7 +351,7 @@ public class IOInterface extends WordRecommender {
 					totalVowelCount = analysis.getTotalVowelCount();
 
 					
-					
+
 					if(PatternChecker.isBigInteger(word) == true)
 					{
 						printWordToDoc(pw, word, false, false, punctuation);
@@ -289,7 +372,6 @@ public class IOInterface extends WordRecommender {
 					 * The "?!" would be saved as the punctuation string, and "hesaidthat..." would be saved as afterPunctuation, and would then be sent through
 					 * the outer while-loop again.   
 					 */
-
 
 					int punctuationIndex = PatternChecker.detectPunctuation(word);
 					int firstPunctuationIndex = punctuationIndex;
@@ -319,6 +401,8 @@ public class IOInterface extends WordRecommender {
 						printWordToDoc(pw, word, capitalizeNext, punctuationFound, punctuation);
 					}
 					else {
+						// need to figure out where formatter goes in this block
+						
 						/*
 						 * getWordSuggestions called here. Adjust variables to adjust set of words retrieved from dictionary.
 						 */
@@ -328,11 +412,11 @@ public class IOInterface extends WordRecommender {
 						if (possibleWords.size() >= 1) {
 							System.out.println("The following suggestions are available");
 							System.out.println(prettyPrint(possibleWords));
-							System.out.println("Press 'r' for replace, 'a' for accept as is, 't' for type in manually.");
+							System.out.println("Press 'r' for replace, 'a' for accept as is, 't' for type in manually, 'd' to add word to dictionary.");
 						}
 						else {
 							System.out.println("There are 0 suggestions in our dictionary for this word.");
-							System.out.println("Press 'a' for accept as is, 't' for type in manually.");	
+							System.out.println("Press 'a' for accept as is, 't' for type in manually, 'd' to add word to dictionary.");	
 							rCommandAllowed = false;
 						}
 						
@@ -402,7 +486,6 @@ public class IOInterface extends WordRecommender {
 								else if (command.contentEquals("")) {
 									System.out.print("Please select a command ");
 									repeat = true;
-
 								}
 								else {
 									repeat = true;
@@ -423,8 +506,7 @@ public class IOInterface extends WordRecommender {
 				percCorrectWords = numCorrectWords/numTotalWords;
 				userInput.close();
 				pw.flush();
-				
-				
+							
 				pw.close();
 				fw.close();
 				
