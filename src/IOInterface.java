@@ -90,48 +90,6 @@ public class IOInterface extends WordRecommender {
 	public IOInterface(String fileName) {
 		super(fileName);
 	}
-	
-	public void askForInputMethod() {
-		
-		Scanner IOMethod = new Scanner(System.in);
-		System.out.print("Enter 'o' for old interface, 'n' for new interface: ");
-		
-		boolean repeat = true;
-		
-		while (repeat == true) {
-			String io = IOMethod.nextLine().trim();
-			
-			if (io.equals("o")) {
-				repeat = false;
-				askForDocument();
-			
-				
-			}
-			else if (io.equals("n")) {
-
-				repeat = false;
-				TextDocumentUI ui = new TextDocumentUI();
-		    	
-		        EventQueue.invokeLater(new Runnable() {
-		            public void run() {
-		                ui.createAndShowGUI();  
-		            }
-		        });
-
-			}
-			else {
-				
-				System.out.print("Input not understood, please re-enter: ");
-				
-			}
-			
-		}
-		
-		
-		
-		
-		IOMethod.close();
-	}
 
 	public void askForInputMethod() {
 		
@@ -183,47 +141,6 @@ public class IOInterface extends WordRecommender {
 			end = checkDocument(docNameInput.nextLine().trim());
 		}
 		docNameInput.close();
-	}
-
-	/**
-	 * Helper method for printing words to the output document. Contains logic for controlling whether to 
-	 * 
-	 * @param pw PrintWriter used for printing to document
-	 * @param word word to be printed to document
-	 * @param capitalize boolean for whether the first letter of the word should be capitalized
-	 * @param hasPunctuation boolean for whether the word is followed by punctuation
-	 * @param punctuationString String that contains punctuation to be appended to the word
-	 */
-	public void printWordToDoc(PrintWriter pw, String word, boolean capitalize, boolean hasPunctuation, String punctuationString) {
-		if (capitalize == true) {
-			char firstChar = word.charAt(0);
-			String strFirstChar = firstChar + "";
-			word = strFirstChar.toUpperCase() + word.substring(1);
-			this.capitalizeNext = false;
-		}
-		
-		String trailingSpace = " ";
-		
-		if (hasPunctuation == true) {
-			/*
-			 * removed until support for double quotation added back in.
-			if (punctuationString.equals("\"")){
-				this.doubleQuote = !this.doubleQuote;
-			}
-			if (this.doubleQuote == true) {
-				trailingSpace = "";
-			}
-			*/
-			
-			pw.print(word + punctuationString + trailingSpace);
-			if (punctuationString.equals(".") || punctuationString.contains("?") || punctuationString.contains("!") || punctuationString.equals("....")) {
-				this.capitalizeNext = true;
-			}
-		}
-		else {
-			pw.print(word + trailingSpace);
-		}
-		
 	}
 	
 	/**
@@ -341,14 +258,14 @@ public class IOInterface extends WordRecommender {
 					/*
 					 * Vowel and Consonant Analysis
 					 */
-					vowelConsonantAnalysis analysis = new vowelConsonantAnalysis();
-					analysis.vowelConsontantCounts(word);
-					analysis.calculateAverageVowelandConsonantCounts(analysis.getConsonantCounts());
-					averageConsonantCount = analysis.getAverageCounts();
-					analysis.calculateAverageVowelandConsonantCounts(analysis.getVowelCounts());
-					averageVowelCount = analysis.getAverageCounts();
-					totalConsonantCount = analysis.getTotalConsonantCount();
-					totalVowelCount = analysis.getTotalVowelCount();
+					vowelConsonantAnalysis vowelAnalysis = new vowelConsonantAnalysis();
+					vowelAnalysis.vowelConsontantCounts(word);
+					vowelAnalysis.calculateAverageVowelandConsonantCounts(vowelAnalysis.getConsonantCounts());
+					averageConsonantCount = vowelAnalysis.getAverageCounts();
+					vowelAnalysis.calculateAverageVowelandConsonantCounts(vowelAnalysis.getVowelCounts());
+					averageVowelCount = vowelAnalysis.getAverageCounts();
+					totalConsonantCount = vowelAnalysis.getTotalConsonantCount();
+					totalVowelCount = vowelAnalysis.getTotalVowelCount();
 
 					
 
