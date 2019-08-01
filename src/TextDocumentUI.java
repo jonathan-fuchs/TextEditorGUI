@@ -10,6 +10,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
+//import javax.swing.text.Highlighter.Highlight;
 
 import java.io.*;
 import java.nio.file.FileSystems;
@@ -52,11 +53,12 @@ public class TextDocumentUI {
 	private boolean alwaysOnTop = false;   
 	private boolean newDocument = true;
 	private File document;
+	private Highlighter painter;
     
     public JMenuBar createMenuBar() {
         JMenuBar menuBar;
         JMenu fileMenu, editMenu, formatMenu, reviewMenu;
-        JMenuItem menuItemNew, menuItemSave, menuItemSaveAs, menuItemOpen, menuItemCopy, menuItemCut, menuItemPaste, menuItemSelectAll, menuItemSpellCheck, menuItemExit, menuItemHighlight;
+        JMenuItem menuItemNew, menuItemSave, menuItemSaveAs, menuItemOpen, menuItemCopy, menuItemCut, menuItemPaste, menuItemSelectAll, menuItemSpellCheck, menuItemExit, menuItemHighlight, menuItemRemoveAllHighlights;
         Action copy = new DefaultEditorKit.CopyAction();
         Action cut = new DefaultEditorKit.CutAction();
         Action paste = new DefaultEditorKit.PasteAction();
@@ -205,8 +207,16 @@ public class TextDocumentUI {
         menuItemHighlight.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e)
         	{
-        		Highlighter painter = output.getHighlighter();
+        		painter = output.getHighlighter();
         		try {
+        			//Highlight[] currentHighlights = painter.getHighlights();
+        			
+        			//for (int i = output.getSelectionStart(); i <= output.getSelectionEnd(); i++) {
+        				
+        				
+        				
+        			//}
+        			
 					painter.addHighlight(output.getSelectionStart(), output.getSelectionEnd(), new DefaultHighlighter.DefaultHighlightPainter(new Color(0xFAED27)));
 					output.setCaretPosition(output.getSelectionEnd());
 					
@@ -217,7 +227,18 @@ public class TextDocumentUI {
         	}
         });
         
+        menuItemRemoveAllHighlights = new JMenuItem("Remove Highlights", KeyEvent.VK_R);
+        menuItemRemoveAllHighlights.getAccessibleContext().setAccessibleDescription("Removes all highlights");
+        menuItemRemoveAllHighlights.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e)
+        	{
+        		painter = output.getHighlighter();
+        		painter.removeAllHighlights();
+        	}
+        });
+        
         formatMenu.add(menuItemHighlight);
+        formatMenu.add(menuItemRemoveAllHighlights);
         
         
       //Build fourth menu in the menu bar.
