@@ -2,8 +2,6 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 
-import main.AirlineInfo;
-
 /**
  * Class governing input/output with user
  * 
