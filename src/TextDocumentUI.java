@@ -1,5 +1,6 @@
 
 import java.awt.*;
+//import java.awt.List;
 import java.awt.event.*;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -11,14 +12,18 @@ import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.DefaultHighlighter;
 //import javax.swing.text.Highlighter;
 //import javax.swing.text.Highlighter.Highlight;
+import javax.swing.text.Highlighter;
 
 import java.io.*;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 import javax.swing.JPanel;
+//import javax.swing.JPopupMenu;
 import javax.swing.JTextPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -44,6 +49,7 @@ public class TextDocumentUI {
 	private String documentName = "Untitled Document";
 	private String titleBar = "Document Editor GUI";
 	private JMenuBar menuBar;
+	private JMenuItem suggestionsMenu = new JMenu("Suggestions");;
 	private JMenu currentFile;
 	private Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -59,13 +65,18 @@ public class TextDocumentUI {
 	private File document;
 	private DefaultHighlighter highlighter;
 	
-	private WordRecommender dictionary = new WordRecommender("engDictionary.txt");
+	private String dictionaryFileName = "engDictionary.txt";
+	private String backupDictionaryFileName = "engDictionary_backup.txt";
+	private WordRecommender dictionary = new WordRecommender(dictionaryFileName);
+	private ArrayList<ArrayList<String>> menuSuggestions = new ArrayList<>();
+	//HashMap<Object, ArrayList<String>> wordSuggestions = new HashMap<>();
+	//HashMap<String, ArrayList<String>> menuSuggestions = new HashMap<>();
 	
 	
     
     public JMenuBar createMenuBar() {
         JMenu fileMenu, editMenu, formatMenu, reviewMenu;
-        JMenuItem menuItemNew, menuItemSave, menuItemSaveAs, menuItemOpen, menuItemCopy, menuItemCut, menuItemPaste, menuItemSelectAll, menuItemSpellCheck, menuItemExit, menuItemHighlight, menuItemRemoveAllHighlights;
+        JMenuItem menuItemNew, menuItemSave, menuItemSaveAs, menuItemOpen, menuItemCopy, menuItemCut, menuItemPaste, menuItemSelectAll, menuItemSpellCheck, menuItemResetDictionary, menuItemExit, menuItemHighlight, menuItemRemoveAllHighlights;
         Action copy = new DefaultEditorKit.CopyAction();
         Action cut = new DefaultEditorKit.CutAction();
         Action paste = new DefaultEditorKit.PasteAction();
@@ -265,9 +276,38 @@ public class TextDocumentUI {
         	}
         });
         
-        reviewMenu.add(menuItemSpellCheck);
+        menuItemResetDictionary = new JMenuItem("Reset Dictionary", KeyEvent.VK_R);
+        menuItemResetDictionary.getAccessibleContext().setAccessibleDescription("Removes user additions to dictionary");
+        menuItemResetDictionary.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e)
+        	{
+        		try {
+        			Path backupDictionary = Paths.get(backupDictionaryFileName);
+            		Path currentDictionary = Paths.get(dictionaryFileName);
+					Files.copy(backupDictionary, currentDictionary, StandardCopyOption.REPLACE_EXISTING);
+					dictionary = new WordRecommender(dictionaryFileName);
+					menuBar.remove(suggestionsMenu);
+			    	suggestionsMenu = new JMenu("Suggestions");
+			    	menuSuggestions = new ArrayList<>();
+			        menuBar.updateUI();
+			        
+			        highlighter = (DefaultHighlighter)output.getHighlighter();
+			    	highlighter.removeAllHighlights();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+        	}
+        });
         
-        // Fifth menu in menu bar is just a label
+        reviewMenu.add(menuItemSpellCheck);
+        reviewMenu.add(menuItemResetDictionary);
+        
+        //Fifth menu is the suggestionsMenu and is created when running spellCheck
+
+        
+        
+        // Sixth menu in menu bar is just a label
         currentFile = new JMenu(documentName);
         
         menuBar.add(currentFile);
@@ -387,6 +427,12 @@ public class TextDocumentUI {
     	//createAndShowGUI();
     	output.setText(documentText);
     	currentFile.setText(documentName);
+    	
+    	menuBar.remove(suggestionsMenu);
+    	suggestionsMenu = new JMenu("Suggestions");
+    	//menuSuggestions = new HashMap<>();
+    	menuSuggestions = new ArrayList<>();
+    	
         menuBar.updateUI();
     }
     
@@ -439,12 +485,23 @@ public class TextDocumentUI {
     	newDocument = true;
     	output.setText("");
     	currentFile.setText(documentName);
+    	
+    	menuBar.remove(suggestionsMenu);
+    	suggestionsMenu = new JMenu("Suggestions");
+    	//menuSuggestions = new HashMap<>();
+    	menuSuggestions = new ArrayList<>();
+    	
         menuBar.updateUI();
     }
   
     public void checkSpelling() {
     	highlighter = (DefaultHighlighter)output.getHighlighter();
     	highlighter.removeAllHighlights();
+    	
+    	menuBar.remove(suggestionsMenu);
+    	suggestionsMenu = new JMenu("Suggestions");
+    	//menuSuggestions = new HashMap<>();
+    	menuSuggestions = new ArrayList<>();
     	
     	String currentText = output.getText();
     	int overallIndex = 0;
@@ -499,7 +556,14 @@ public class TextDocumentUI {
         		else if(!currentWord.equals("") && !dictionary.checkForExactWord(currentWord.toLowerCase())) {
         			try {
         				// NOTE: the SquigglePainter highlighter is not our code. Please see note in SquigglePainter.java class
-						highlighter.addHighlight(overallIndex, overallIndex + currentWord.length(), new SquigglePainter(new Color(0xFF0000)));
+        				//Object currentHighlight = highlighter.addHighlight(overallIndex, overallIndex + currentWord.length(), new SquigglePainter(new Color(0xFF0000)));
+        				highlighter.addHighlight(overallIndex, overallIndex + currentWord.length(), new SquigglePainter(new Color(0xFF0000)));
+        				ArrayList<String> suggestions = dictionary.getWordSuggestions(currentWord.toLowerCase(), 2, 0.7, 4);
+        				//wordSuggestions.put(currentHighlight, suggestions);
+        				//menuSuggestions.put(currentWord, suggestions);
+        				suggestions.add(0, currentWord);
+        				menuSuggestions.add(suggestions);
+        				
 					} catch (BadLocationException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -514,10 +578,117 @@ public class TextDocumentUI {
     		overallIndex++;
     		
     	}
+    	//System.out.println(highlighter.getHighlights() +  " " + highlighter.getHighlights()[0].getStartOffset() + highlighter.getHighlights()[0].getEndOffset());
     	
+    	/*
+    	try {
+			highlighter.changeHighlight(highlighter.getHighlights()[0], 3, 8);
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		*/
+    	//highlighter.getHighlights()[0]
+    	
+    	
+           	
+    	//if (!menuSuggestions.keySet().isEmpty()) {
+    	if (menuSuggestions.size() != 0) {
+        	
+    		int menuIndex = -1;
+        	//for (String key : menuSuggestions.keySet()) {
+        	for (int i = 0; i < menuSuggestions.size(); i++) {
+        		String misspelledWord = menuSuggestions.get(i).get(0);
+        		JMenu misspelledWordItem = new JMenu(misspelledWord);
+        		suggestionsMenu.add(misspelledWordItem);
+        		menuIndex++;
+        		JMenuItem addWordToDict = new JMenuItem("Add word to dictionary");
+        		addWordToDict.addActionListener(new ActionListener() {
+    	        	public void actionPerformed(ActionEvent e)
+    	        	{
+    	        		
+    	        		dictionary.getDictionary().addWordToDictionaries(misspelledWord.toLowerCase());
+    	        		dictionary.updateDictionaries();
+    	        		File dictionaryDocument = new File(dictionaryFileName);
+						try {
+							FileWriter fwDictionary = new FileWriter(dictionaryDocument, true);
+							PrintWriter pwDictionary = new PrintWriter(fwDictionary);
+							pwDictionary.println(misspelledWord.toLowerCase());
+							pwDictionary.close();
+							fwDictionary.close();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+    	        		
+    	        		checkSpelling();
+    	        	}
+    	        });
+        		
+        		
+        		misspelledWordItem.add(addWordToDict);
+        		if (menuSuggestions.get(i).size() > 1) {
+        			misspelledWordItem.addSeparator();
+        		}
+        		ArrayList<String> misspelledWordSuggestions = menuSuggestions.get(i);
+        		for (int j = 1; j < misspelledWordSuggestions.size(); j++) {
+        			String suggestedWord = misspelledWordSuggestions.get(j);
+        			JMenuItem suggestedWordItem = new JMenuItem(suggestedWord); 
+        			int highlighterIndex = menuIndex;
+        			//int suggestedArrayListIndex = j;
+        			suggestedWordItem.addActionListener(new ActionListener() {
+        	        	public void actionPerformed(ActionEvent e)
+        	        	{
+        	        		
+        	        		Highlighter.Highlight currentHighlight = highlighter.getHighlights()[highlighterIndex];
+        	        		int wordStart = currentHighlight.getStartOffset();
+        	        		int wordEnd = currentHighlight.getEndOffset();
+        	        		output.setSelectionStart(wordStart);
+        	        		output.setSelectionEnd(wordEnd);
+        	        		output.replaceSelection(suggestedWord);
+        	        		highlighter.removeHighlight(currentHighlight);
+        	        		output.setCaretPosition(wordEnd);
+        	        		 /*
+        	        		misspelledWordSuggestions.remove(suggestedArrayListIndex);
+        	        		suggestionsMenu.remove(suggestedWordItem);
+        	        		suggestionsMenu.updateUI();
+        	        		menuBar.updateUI();
+        	        		*/
+        	        		checkSpelling();
+        	        	}
+        	        });
+        			misspelledWordItem.add(suggestedWordItem);
+        		}
+
+        	}
+
+        	menuBar.add(suggestionsMenu, 4);
+        }
+    	
+    	menuBar.updateUI();
     	docScanner.close();
     	
     }
+    /*
+    public void createRightClickMenu() {
+    	
+    	ArrayList<String> tempInnerArrayList = new ArrayList<>();
+    	tempInnerArrayList.add("OriginalWord");
+    	tempInnerArrayList.add("Word1");
+    	tempInnerArrayList.add("Word2");
+    	wordSuggestions.add(tempInnerArrayList);
+    	
+    	JPopupMenu rightClickMenu = new JPopupMenu(); 
+    	
+    	for (int j = 1; j < wordSuggestions.size(); j++) {
+    		
+    		rightClickMenu.add(new JMenuItem(wordSuggestions.get(0).get(j)));
+    		
+    	}
+    	
+    	
+    }
+    */
     
     public Container createContentPane() {
         //Create the content-pane-to-be.
