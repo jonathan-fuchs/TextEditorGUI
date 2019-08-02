@@ -31,7 +31,6 @@ import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.Timer;
  
 /**
  * I found this tutorial immensely helpful: https://docs.oracle.com/javase/tutorial/uiswing/components/menu.html
@@ -56,11 +55,7 @@ public class TextDocumentUI {
 	private String documentText;
 	private JDialog popUpWindow;
 	private JTextField popUpWindowTextField;
-    
-	private int pause = 800;
-	private int speed = 300;
-	private Timer timer;
-	private boolean alwaysOnTop = false;   
+     
 	private boolean newDocument = true;
 	private File document;
 	private DefaultHighlighter highlighter;
@@ -73,7 +68,10 @@ public class TextDocumentUI {
 	//HashMap<String, ArrayList<String>> menuSuggestions = new HashMap<>();
 	
 	
-    
+    public JFrame getFrame() {
+    	return frame;
+    }
+	
     public JMenuBar createMenuBar() {
         JMenu fileMenu, editMenu, formatMenu, reviewMenu;
         JMenuItem menuItemNew, menuItemSave, menuItemSaveAs, menuItemOpen, menuItemCopy, menuItemCut, menuItemPaste, menuItemSelectAll, menuItemSpellCheck, menuItemResetDictionary, menuItemExit, menuItemHighlight, menuItemRemoveAllHighlights;
@@ -728,28 +726,7 @@ public class TextDocumentUI {
  
         frame.setSize(600, 600);
         frame.setVisible(true);
-                
-        timer = new Timer(speed, new ActionListener() {public void actionPerformed(ActionEvent e){
-        	
-        	//frame.toFront();
-        	if (alwaysOnTop == false) {
-        		frame.setAlwaysOnTop(true);
-        		alwaysOnTop = false;
-        	}
-        	else {
-        		//request focus doesn't work
-        		//frame.requestFocus();
-        		//frame.toFront();
-        		//frame.setVisible(true);
-        		frame.setAlwaysOnTop(false);
-        		timer.stop();
-        	}
-
-        }});
-        timer.setInitialDelay(pause);
-        timer.start(); 
+        frame.setAlwaysOnTop(true);
         
-        //
-
     }
 }
