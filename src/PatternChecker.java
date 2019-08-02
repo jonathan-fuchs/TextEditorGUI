@@ -82,4 +82,40 @@ public class PatternChecker {
 		}
 		return matcher.start();
 	}
+	
+	
+	
+	
+	
+	public static int detectNonPunctuation(String str) {
+		Pattern pattern = Pattern.compile("[\\w]");
+		Matcher matcher = pattern.matcher(str); 
+		
+		if (matcher.find() == false) {
+			return -1;
+		}
+		return matcher.start();
+	}
+	
+	
+	
+	public static int detectNonSpaces(String str) {
+		Pattern pattern = Pattern.compile("[^\\s]");
+		Matcher matcher = pattern.matcher(str); 
+		
+		if (matcher.find() == false) {
+			return -1;
+		}
+		return matcher.start();
+	}
+	
+	public static int detectSpaces(String str) {
+		Pattern pattern = Pattern.compile("[\\s]");
+		Matcher matcher = pattern.matcher(str); 
+		
+		if (matcher.find() == false) {
+			return -1;
+		}
+		return matcher.start();
+	}
 }
