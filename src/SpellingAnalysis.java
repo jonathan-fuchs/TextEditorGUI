@@ -9,6 +9,15 @@ public class SpellingAnalysis {
 	private ArrayList<Integer> sentenceLengths = new ArrayList<Integer>();
 	private ArrayList<Integer> syllableCounts = new ArrayList<Integer>();
 	
+	private double percentChecked;
+	private double percentWrong;
+	private double percentFromSuggestion;
+	private double percentFromManualEntry;
+	private double percentAccepted;
+	
+	private double readingEase;
+	private double readingGradeLevel;
+	
 	
 	public void spellingAnalysisSuite() {
 		System.out.println("Here is some exciting analysis on your document: ");
@@ -20,11 +29,11 @@ public class SpellingAnalysis {
 	public void spellingPercentBreakdown() {
 		double wrongWords = (double)this.wordsFromSuggestion + this.wordsFromManualEntry;
 		
-		double percentChecked = (double)this.spellCheckedWords / this.wordCount;
-		double percentWrong = wrongWords / this.wordCount;
-		double percentFromSuggestion = (double) this.wordsFromSuggestion / wrongWords;
-		double percentFromManualEntry = (double) this.wordsFromManualEntry / wrongWords;
-		double percentAccepted = (double) this.wordsAccepted / this.wordCount;
+		this.percentChecked = (double)this.spellCheckedWords / this.wordCount;
+		this.percentWrong = wrongWords / this.wordCount;
+		this.percentFromSuggestion = (double) this.wordsFromSuggestion / wrongWords;
+		this.percentFromManualEntry = (double) this.wordsFromManualEntry / wrongWords;
+		this.percentAccepted = (double) this.wordsAccepted / this.wordCount;
 		
 		System.out.println();
 		System.out.println("Spelling Breakdown");
@@ -64,9 +73,6 @@ public class SpellingAnalysis {
 		double aveSentenceLen;
 		double aveSyllablePerWord;
 		
-		double readingEase;
-		double readingGradeLevel;
-		
 		for (int sentence : this.sentenceLengths) {
 			sentenceLen += sentence;
 		}
@@ -77,8 +83,8 @@ public class SpellingAnalysis {
 		}
 		aveSyllablePerWord = syllablePerWord / this.getSyllableCounts().size();
 		
-		readingEase = 206.835 - (1.015 * aveSentenceLen) - (84.6 * aveSyllablePerWord);
-		readingGradeLevel = (.39 * aveSentenceLen) + (11.8 * aveSyllablePerWord) - 15.59;
+		this.readingEase = 206.835 - (1.015 * aveSentenceLen) - (84.6 * aveSyllablePerWord);
+		this.readingGradeLevel = (.39 * aveSentenceLen) + (11.8 * aveSyllablePerWord) - 15.59;
 		
 		System.out.println();
 		System.out.println("Readability Metrics");
