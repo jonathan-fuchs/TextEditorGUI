@@ -58,6 +58,10 @@ public class TextDocumentUI {
 	private boolean newDocument = true;
 	private File document;
 	private DefaultHighlighter highlighter;
+	
+	private WordRecommender dictionary = new WordRecommender("engDictionary.txt");
+	
+	
     
     public JMenuBar createMenuBar() {
         JMenu fileMenu, editMenu, formatMenu, reviewMenu;
@@ -440,6 +444,85 @@ public class TextDocumentUI {
   
     public void checkSpelling() {
     	System.out.println("On my TODO list!");
+    	
+    	highlighter = (DefaultHighlighter)output.getHighlighter();
+    	highlighter.removeAllHighlights();
+
+		//output.setCaretPosition(output.getSelectionEnd());
+    	
+    	
+    	String currentText = output.getText();
+    	//String outputText = "";
+    	int overallIndex = 0;
+    	Scanner docScanner = new Scanner(currentText);
+    	
+    	while (docScanner.hasNextLine()) {
+    		String currentLine = docScanner.nextLine();
+    		String currentWord;
+    		
+    		//int lineIndex = 0;
+    		while (!currentLine.equals("")) {
+    			//int currentIndex = 0;
+    			    			
+    			// trim leading spaces
+    			int nonSpaceIndex = PatternChecker.detectNonSpaces(currentLine);
+    			if (nonSpaceIndex > 0) {
+    				//lineIndex += nonSpaceIndex;
+    				overallIndex += nonSpaceIndex;
+        			currentLine = currentLine.substring(nonSpaceIndex);	
+    			}
+    			
+    			// trim leading punctuation
+        		int nonPunctuationIndex = PatternChecker.detectNonPunctuation(currentLine);
+        		if (nonPunctuationIndex > 0) {
+        			//lineIndex += punctuationIndex;
+        			overallIndex += nonPunctuationIndex;
+            		currentLine = currentLine.substring(nonPunctuationIndex);
+        		}
+        		
+        		currentWord = currentLine;
+        				
+        		// ignore trailing spaces
+        		int spaceIndex = PatternChecker.detectSpaces(currentWord);
+        		if (spaceIndex > -1) {
+        			currentWord = currentWord.substring(0, spaceIndex);
+        		}
+        		
+        		// ignore trailing punctuation
+        		int punctuationIndex = PatternChecker.detectPunctuation(currentWord);
+        		if (punctuationIndex > -1) {
+        			currentWord = currentWord.substring(0, punctuationIndex);
+        		}
+        		
+        		if(currentWord.equals("")) {
+        			if(PatternChecker.detectNonPunctuation(currentLine) == -1) {
+        				overallIndex += currentLine.length();
+        				currentLine = "";
+        			}
+        			break;
+        		}
+
+        		if(!currentWord.equals("") && !dictionary.checkForExactWord(currentWord)) {
+        			//System.out.println(currentWord + " was not found in dictionary");
+        			try {
+						highlighter.addHighlight(overallIndex, overallIndex + currentWord.length(), new DefaultHighlighter.DefaultHighlightPainter(new Color(0xFF0000)));
+					} catch (BadLocationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+        		}
+        		
+        		overallIndex += currentWord.length();
+        		currentLine = currentLine.substring(currentWord.length());
+    			
+    		}
+    		// add one for each new line
+    		overallIndex++;
+    		
+    	}
+    	
+    	docScanner.close();
+    	
     }
     
     public Container createContentPane() {
