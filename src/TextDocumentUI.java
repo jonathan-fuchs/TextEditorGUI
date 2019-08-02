@@ -498,7 +498,8 @@ public class TextDocumentUI {
         		}
         		else if(!currentWord.equals("") && !dictionary.checkForExactWord(currentWord.toLowerCase())) {
         			try {
-						highlighter.addHighlight(overallIndex, overallIndex + currentWord.length(), new DefaultHighlighter.DefaultHighlightPainter(new Color(0xFF0000)));
+        				// NOTE: the SquigglePainter highlighter is not our code. Please see note in SquigglePainter.java class
+						highlighter.addHighlight(overallIndex, overallIndex + currentWord.length(), new SquigglePainter(new Color(0xFF0000)));
 					} catch (BadLocationException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
