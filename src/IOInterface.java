@@ -32,6 +32,8 @@ public class IOInterface extends WordRecommender {
 	private double averageVowelCount;
 	private int totalVowelCount;
 	private int totalConsonantCount;
+	private SpellingAnalysis analysis = new SpellingAnalysis();
+	private TextFormatting formatter = new TextFormatting();
 		
 	public double getAverageConsonantCount() {
 		return averageConsonantCount;
@@ -153,6 +155,10 @@ public class IOInterface extends WordRecommender {
 	 * @param punctuationString String that contains punctuation to be appended to the word
 	 */
 	public void printWordToDoc(PrintWriter pw, String word, boolean capitalize, boolean hasPunctuation, String punctuationString) {
+		// add word count to analysis
+		int currentWordCount = analysis.getWordCount();
+		analysis.setWordCount(currentWordCount++);
+		
 		if (capitalize == true) {
 			char firstChar = word.charAt(0);
 			String strFirstChar = firstChar + "";
@@ -173,12 +179,22 @@ public class IOInterface extends WordRecommender {
 			}
 			*/
 			
+			// line break logic
+			String addedString = word + punctuationString + trailingSpace;
+			formatter.setLineCharLength(formatter.getLineCharLength() + addedString.length());
+			formatter.addLineBreaks(pw);
+			
 			pw.print(word + punctuationString + trailingSpace);
 			if (punctuationString.equals(".") || punctuationString.contains("?") || punctuationString.contains("!") || punctuationString.equals("....")) {
 				this.capitalizeNext = true;
 			}
 		}
 		else {
+			// line break logic
+			String addedString = word + trailingSpace;
+			formatter.setLineCharLength(formatter.getLineCharLength() + addedString.length());
+			formatter.addLineBreaks(pw);
+			
 			pw.print(word + trailingSpace);
 		}
 		
@@ -192,8 +208,7 @@ public class IOInterface extends WordRecommender {
 	 */
 	
 	public boolean checkDocument(String docName) {
-		SpellingAnalysis analysis = new SpellingAnalysis();
-		TextFormatting formatter = new TextFormatting();
+
 		File userDocument = new File(docName);
 		String outputDocumentName;
 		
