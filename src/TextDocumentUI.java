@@ -443,16 +443,10 @@ public class TextDocumentUI {
     }
   
     public void checkSpelling() {
-    	System.out.println("On my TODO list!");
-    	
     	highlighter = (DefaultHighlighter)output.getHighlighter();
     	highlighter.removeAllHighlights();
-
-		//output.setCaretPosition(output.getSelectionEnd());
-    	
     	
     	String currentText = output.getText();
-    	//String outputText = "";
     	int overallIndex = 0;
     	Scanner docScanner = new Scanner(currentText);
     	
@@ -460,27 +454,24 @@ public class TextDocumentUI {
     		String currentLine = docScanner.nextLine();
     		String currentWord;
     		
-    		//int lineIndex = 0;
     		while (!currentLine.equals("")) {
-    			//int currentIndex = 0;
-    			    			
+    		
     			// trim leading spaces
     			int nonSpaceIndex = PatternChecker.detectNonSpaces(currentLine);
-    			if (nonSpaceIndex > 0) {
-    				//lineIndex += nonSpaceIndex;
+    			if (nonSpaceIndex > -1) {
     				overallIndex += nonSpaceIndex;
         			currentLine = currentLine.substring(nonSpaceIndex);	
     			}
     			
     			// trim leading punctuation
         		int nonPunctuationIndex = PatternChecker.detectNonPunctuation(currentLine);
-        		if (nonPunctuationIndex > 0) {
-        			//lineIndex += punctuationIndex;
+        		if (nonPunctuationIndex > -1) {
         			overallIndex += nonPunctuationIndex;
             		currentLine = currentLine.substring(nonPunctuationIndex);
         		}
         		
         		currentWord = currentLine;
+        		//System.out.println(currentWord);
         				
         		// ignore trailing spaces
         		int spaceIndex = PatternChecker.detectSpaces(currentWord);
@@ -494,16 +485,18 @@ public class TextDocumentUI {
         			currentWord = currentWord.substring(0, punctuationIndex);
         		}
         		
-        		if(currentWord.equals("")) {
+        		
+        		
+        		if(PatternChecker.isBigInteger(currentWord) || PatternChecker.isBigDecimal(currentWord)) {
+        			// do nothing
+        		}
+        		else if(currentWord.equals("")) {
         			if(PatternChecker.detectNonPunctuation(currentLine) == -1) {
         				overallIndex += currentLine.length();
         				currentLine = "";
         			}
-        			break;
         		}
-
-        		if(!currentWord.equals("") && !dictionary.checkForExactWord(currentWord)) {
-        			//System.out.println(currentWord + " was not found in dictionary");
+        		else if(!currentWord.equals("") && !dictionary.checkForExactWord(currentWord.toLowerCase())) {
         			try {
 						highlighter.addHighlight(overallIndex, overallIndex + currentWord.length(), new DefaultHighlighter.DefaultHighlightPainter(new Color(0xFF0000)));
 					} catch (BadLocationException e) {
@@ -516,7 +509,7 @@ public class TextDocumentUI {
         		currentLine = currentLine.substring(currentWord.length());
     			
     		}
-    		// add one for each new line
+    		// add one to the index for each new line
     		overallIndex++;
     		
     	}
