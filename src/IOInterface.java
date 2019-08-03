@@ -30,31 +30,7 @@ public class IOInterface extends WordRecommender {
 	private TextFormatting formatter = new TextFormatting();
 	private boolean endOfSentence = false;
 	private boolean oldUI = true;
-		
-	public double getAverageConsonantCount() {
-		return averageConsonantCount;
-	}
-
-	public double getAverageVowelCount() {
-		return averageVowelCount;
-	}
-
-	public int getTotalVowelCount() {
-		return totalVowelCount;
-	}
-
-	public int getTotalConsonantCount() {
-		return totalConsonantCount;
-	}
-
-	public int getCharCounts() {
-		return charCounts;
-	}
-
-	public void setCharCounts(int charCounts) {
-		this.charCounts = charCounts;
-	}
-	
+			
 	public boolean getOldUI() {
 		return oldUI;
 	}

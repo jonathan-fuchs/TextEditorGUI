@@ -73,7 +73,7 @@ public class TextDocumentUI {
 	
     public JMenuBar createMenuBar() {
         JMenu fileMenu, editMenu, formatMenu, fontSizeMenu, reviewMenu;
-        JMenuItem menuItemNew, menuItemSave, menuItemSaveAs, menuItemOpen, menuItemCopy, menuItemCut, menuItemPaste, menuItemSelectAll, menuItemSpellCheck, menuItemResetDictionary, menuItemExit, menuItemHighlight, menuItemRemoveAllHighlights, menuItemNormalFont, menuItemLargeFont, menuItemLargestFont;
+        JMenuItem menuItemNew, menuItemSave, menuItemSaveAs, menuItemOpen, menuItemCopy, menuItemCut, menuItemPaste, menuItemSelectAll, menuItemSpellCheck, menuItemResetDictionary, menuItemExit, menuItemHighlight, menuItemRemoveAllHighlights, menuItemNormalFont, menuItemLargeFont, menuItemLargestFont, menuItemReadabilityScore;
         Action copy = new DefaultEditorKit.CopyAction();
         Action cut = new DefaultEditorKit.CutAction();
         Action paste = new DefaultEditorKit.PasteAction();
@@ -331,8 +331,76 @@ public class TextDocumentUI {
         	}
         });
         
+        menuItemReadabilityScore = new JMenuItem("Readability Score", KeyEvent.VK_S);
+        menuItemReadabilityScore.getAccessibleContext().setAccessibleDescription("Calculates readability score for current document");
+        menuItemReadabilityScore.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e)
+        	{
+        		SpellingAnalysis sAnalysis = new SpellingAnalysis();            	
+            	String currentText = output.getText();
+            	Scanner docScanner = new Scanner(currentText);
+            	
+            	while (docScanner.hasNextLine()) {
+            		String currentLine = docScanner.nextLine();
+            		//String currentWord;
+            		
+            		while (!currentLine.equals("")) {
+            			
+                		int spaceIndex = PatternChecker.detectSpaces(currentLine);
+                		int punctuationIndex = PatternChecker.detectPunctuation(currentLine);
+                		if (punctuationIndex == 0 || spaceIndex == 0) {
+                			if (currentLine.length() == 1) {
+                				currentLine = "";
+                			}
+                			else {
+                				currentLine = currentLine.substring(1);
+                			}
+                		}
+                		else if (punctuationIndex == -1 && spaceIndex == -1) {
+                			sAnalysis.incrementWordsInCurrentSentence();
+                			sAnalysis.getSyllablesInWord(currentLine);
+                			currentLine = "";
+                			//TODO deal with line breaks
+                		}
+                		// no punctuation but there is a space
+                		else if (punctuationIndex == -1 || ((spaceIndex > -1) && (spaceIndex < punctuationIndex))) {
+                			// add 1 to the sentence word count
+                			sAnalysis.incrementWordsInCurrentSentence();
+                			sAnalysis.getSyllablesInWord(currentLine.substring(0, spaceIndex));
+                			// slice currentLine after next word
+                			if (spaceIndex == currentLine.length()) {
+                				currentLine = "";
+                			}
+                			else {
+                				currentLine = currentLine.substring(spaceIndex + 1);
+                			}
+                			
+                		}
+                		else {
+                		//there is punctuation before the next space
+                		// equivalent to: else if (spaceIndex == -1 || ((punctuationIndex > -1) && (punctuationIndex < spaceIndex))) 
+                			sAnalysis.incrementWordsInCurrentSentence();
+                			sAnalysis.getSyllablesInWord(currentLine.substring(0, punctuationIndex));
+                			sAnalysis.getSentenceLength();
+                			
+                			if (punctuationIndex == currentLine.length()) {
+                				currentLine = "";
+                			}
+                			else {
+                				currentLine = currentLine.substring(punctuationIndex + 1);
+                			}
+                		}
+            		}
+            	}
+            	sAnalysis.approxReadability();
+            	docScanner.close();
+        	}
+        });
+        
         reviewMenu.add(menuItemSpellCheck);
         reviewMenu.add(menuItemResetDictionary);
+        reviewMenu.addSeparator();
+        reviewMenu.add(menuItemReadabilityScore);
         
         //Fifth menu is the suggestionsMenu and is created when running spellCheck
 
