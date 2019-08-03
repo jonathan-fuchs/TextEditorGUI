@@ -19,7 +19,7 @@ public class SpellChecker {
 		instance.askForInputMethod();
 		if (instance.getOldUI()) {
 			instance.getAnalysis().spellingAnalysisSuite();
+			instance.getVowelAnalysis().vandcAnalysisSuite();
 		}
-		instance.getVowelAnalysis().vandcAnalysisSuite();
 	}
 }
