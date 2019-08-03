@@ -24,9 +24,7 @@ public class IOInterface extends WordRecommender {
 	/*
 	 * Counting Instance Variables with Getters
 	 */
-	private int numTotalWords;
-	private int numCorrectWords;
-	private double percCorrectWords;
+
 	private int charCounts;
 	private double averageConsonantCount;
 	private double averageVowelCount;
@@ -34,6 +32,7 @@ public class IOInterface extends WordRecommender {
 	private int totalConsonantCount;
 	private SpellingAnalysis analysis = new SpellingAnalysis();
 	private TextFormatting formatter = new TextFormatting();
+	private boolean endOfSentence = false;
 		
 	public double getAverageConsonantCount() {
 		return averageConsonantCount;
@@ -49,30 +48,6 @@ public class IOInterface extends WordRecommender {
 
 	public int getTotalConsonantCount() {
 		return totalConsonantCount;
-	}
-
-	public int getNumTotalWords() {
-		return numTotalWords;
-	}
-
-	public void setNumTotalWords(int numTotalWords) {
-		this.numTotalWords = numTotalWords;
-	}
-
-	public int getNumCorrectWords() {
-		return numCorrectWords;
-	}
-
-	public void setNumCorrectWords(int numCorrectWords) {
-		this.numCorrectWords = numCorrectWords;
-	}
-
-	public double getPercCorrectWords() {
-		return percCorrectWords;
-	}
-
-	public void setPercCorrectWords(double percCorrectWords) {
-		this.percCorrectWords = percCorrectWords;
 	}
 
 	public int getCharCounts() {
@@ -158,6 +133,19 @@ public class IOInterface extends WordRecommender {
 		// add word count to analysis
 		int currentWordCount = analysis.getWordCount();
 		analysis.setWordCount(currentWordCount++);
+		
+		analysis.getSyllablesInWord(word);
+		
+		
+		// check for end of sentence
+		if (endOfSentence) {
+			analysis.getSentenceLength();
+			endOfSentence = false;
+		}
+		else {
+			int sentenceWords = analysis.getWordsInCurrentSentence();
+			analysis.setWordsInCurrentSentence(sentenceWords++);
+		}
 		
 		if (capitalize == true) {
 			char firstChar = word.charAt(0);
@@ -262,12 +250,11 @@ public class IOInterface extends WordRecommender {
 					 * Then will check misspelled words and will provide alternate word suggestions
 					 */
 
-					
-					
+					 
 					/*
 					 * Begins Total Word and Character analysis
 					 */
-					numTotalWords++;
+
 					charCounts = charCounts + word.length();
 					
 					/*
@@ -322,18 +309,21 @@ public class IOInterface extends WordRecommender {
 						punctuation = word.substring(firstPunctuationIndex, lastPunctuationIndex);
 						afterPunctuation = word.substring(lastPunctuationIndex);
 						word = word.substring(0, firstPunctuationIndex);
+						
+						// for end of sentence word count
+						endOfSentence = true;
 					}
 					else {
 						afterPunctuation = "";
 					}
 
-
 					if (checkForExactWord(word) == true) {
-						numCorrectWords++;
 						printWordToDoc(pw, word, capitalizeNext, punctuationFound, punctuation);
 					}
 					else {
-						// need to figure out where formatter goes in this block
+						// update count of words checked
+						int newCheckedWords = analysis.getSpellCheckedWords();
+						analysis.setSpellCheckedWords(newCheckedWords++);
 						
 						/*
 						 * getWordSuggestions called here. Adjust variables to adjust set of words retrieved from dictionary.
@@ -364,6 +354,10 @@ public class IOInterface extends WordRecommender {
 
 								String command = userInput.nextLine();	
 								if (command.trim().equals("r") && rCommandAllowed == true) {
+									//update count of words replaced
+									int replacedWords = analysis.getWordsFromSuggestion();
+									analysis.setWordsFromSuggestion(replacedWords++);
+									
 									System.out.println("Your word will now be replaced with one of the suggestions");
 									System.out.println("Enter the number corresponding to the word that you want to use for replacement.");
 
@@ -383,10 +377,17 @@ public class IOInterface extends WordRecommender {
 
 								}
 								else if (command.trim().equals("a")) {
-									numCorrectWords++;
+									// update count of accepted words
+									int acceptedWords = analysis.getWordsAccepted();
+									analysis.setWordsAccepted(acceptedWords++);
+									
 									printWordToDoc(pw, word, capitalizeNext, punctuationFound, punctuation);
 								}
 								else if (command.trim().equals("t")) {
+									//update count of manually entered words
+									int manuallyUpdatedWords = analysis.getWordsFromManualEntry();
+									analysis.setWordsFromManualEntry(manuallyUpdatedWords++);
+									
 									System.out.println("Please type the word that will be used as the replacement in the output file.");
 									String correctedWord = userInput.nextLine();
 									if (correctedWord.equals("")) {
@@ -435,7 +436,6 @@ public class IOInterface extends WordRecommender {
 					}
 					
 				}
-				percCorrectWords = numCorrectWords/numTotalWords;
 				userInput.close();
 				pw.flush();
 							

@@ -7,6 +7,7 @@ public class SpellingAnalysis {
 	private int wordsFromManualEntry = 0;
 	private int wordsAccepted = 0;
 	private ArrayList<Integer> sentenceLengths = new ArrayList<Integer>();
+	private int wordsInCurrentSentence = 0;
 	private ArrayList<Integer> syllableCounts = new ArrayList<Integer>();
 	
 	private double percentChecked;
@@ -40,6 +41,7 @@ public class SpellingAnalysis {
 		System.out.println("------------------");
 		System.out.println();
 		System.out.println("Words Flagged by Spell Check: " + percentChecked + "%");
+		System.out.println("Words Approved over Spell Check: " + percentAccepted + "%");
 		System.out.println("Words Spelled Incorrectly: " + percentWrong + "%");
 		System.out.println("Misspelled Words Corrected By Suggestion: " + percentFromSuggestion + "%");
 		System.out.println("Misspelled Words Corrected By Manual Entry: " + percentFromManualEntry + "%");
@@ -131,8 +133,9 @@ public class SpellingAnalysis {
 	}
 	
 	
-	public int getSentenceLength() {
-		return 0;
+	public void getSentenceLength() {
+		this.sentenceLengths.add(wordsInCurrentSentence);
+		wordsInCurrentSentence = 0;
 	}
 	
 	
@@ -151,10 +154,22 @@ public class SpellingAnalysis {
 		this.spellCheckedWords = spellCheckedWords;
 	}
 	
-	
-	
-	
-	
+	public void setWordsFromSuggestion(int wordsFromSuggestion) {
+		this.wordsFromSuggestion = wordsFromSuggestion;
+	}
+
+	public void setWordsFromManualEntry(int wordsFromManualEntry) {
+		this.wordsFromManualEntry = wordsFromManualEntry;
+	}
+
+	public void setWordsAccepted(int wordsAccepted) {
+		this.wordsAccepted = wordsAccepted;
+	}
+
+	public void setSentenceLengths(ArrayList<Integer> sentenceLengths) {
+		this.sentenceLengths = sentenceLengths;
+	}
+
 	public int getWordsFromSuggestion() {
 		return wordsFromSuggestion;
 	}
@@ -175,29 +190,14 @@ public class SpellingAnalysis {
 		return syllableCounts;
 	}
 
-//	public SpellingAnalysis() {
-//		
-//	}
-//	
-//	public double percentWordsSpelledCorrectly() {
-//		
-//	}
-//	
-//	public double percentWordedMisspelledInDocument() {
-//		
-//	}
-//	
-//	public double percentWordsRequiringManualEntry() {
-//		
-//	}
-//	
-//	public double percentWordsFromSuggestions() {
-//		
-//	}
-//	
-public int totalWordsMisspelled() {
-	return 0;
-}
+	public int getWordsInCurrentSentence() {
+		return wordsInCurrentSentence;
+	}
+
+	public void setWordsInCurrentSentence(int wordsInCurrentSentence) {
+		this.wordsInCurrentSentence = wordsInCurrentSentence;
+	}
+
 
 
 	
