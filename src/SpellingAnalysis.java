@@ -40,11 +40,11 @@ public class SpellingAnalysis {
 		System.out.println("Spelling Breakdown");
 		System.out.println("------------------");
 		System.out.println();
-		System.out.println("Words Flagged by Spell Check: " + percentChecked + "%");
-		System.out.println("Words Approved over Spell Check: " + percentAccepted + "%");
-		System.out.println("Words Spelled Incorrectly: " + percentWrong + "%");
-		System.out.println("Misspelled Words Corrected By Suggestion: " + percentFromSuggestion + "%");
-		System.out.println("Misspelled Words Corrected By Manual Entry: " + percentFromManualEntry + "%");
+		System.out.println("Words Flagged by Spell Check: " + Double.toString(this.percentChecked) + "%");
+		System.out.println("Words Approved over Spell Check: " + Double.toString(this.percentAccepted) + "%");
+		System.out.println("Words Spelled Incorrectly: " + Double.toString(this.percentWrong) + "%");
+		System.out.println("Misspelled Words Corrected By Suggestion: " + Double.toString(this.percentFromSuggestion) + "%");
+		System.out.println("Misspelled Words Corrected By Manual Entry: " + Double.toString(this.percentFromManualEntry) + "%");
 		System.out.println();
 	}
 	

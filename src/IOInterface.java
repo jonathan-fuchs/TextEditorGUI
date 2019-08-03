@@ -58,6 +58,12 @@ public class IOInterface extends WordRecommender {
 		this.charCounts = charCounts;
 	}
 	
+	
+	
+	public SpellingAnalysis getAnalysis() {
+		return analysis;
+	}
+
 	/**
 	 * Constructor extending WordRecommender class. super used for class inheritance.
 	 * 
@@ -462,7 +468,6 @@ public class IOInterface extends WordRecommender {
 		}
 		System.out.println("Spell check complete.");
 		return true;
-	
 	}
 	
 }
