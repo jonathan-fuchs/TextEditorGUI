@@ -20,6 +20,6 @@ public class SpellChecker {
 		if (instance.getOldUI()) {
 			instance.getAnalysis().spellingAnalysisSuite();
 		}
-		
+		instance.getVowelAnalysis().vandcAnalysisSuite();
 	}
 }
