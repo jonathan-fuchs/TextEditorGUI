@@ -33,6 +33,7 @@ public class IOInterface extends WordRecommender {
 	private SpellingAnalysis analysis = new SpellingAnalysis();
 	private TextFormatting formatter = new TextFormatting();
 	private boolean endOfSentence = false;
+	private boolean oldUI = true;
 		
 	public double getAverageConsonantCount() {
 		return averageConsonantCount;
@@ -56,6 +57,10 @@ public class IOInterface extends WordRecommender {
 
 	public void setCharCounts(int charCounts) {
 		this.charCounts = charCounts;
+	}
+	
+	public boolean getOldUI() {
+		return oldUI;
 	}
 	
 	
@@ -91,6 +96,7 @@ public class IOInterface extends WordRecommender {
 				
 			}
 			else if (io.equals("n")) {
+				oldUI = false;
 
 				repeat = false;
 				TextDocumentUI ui = new TextDocumentUI();
