@@ -69,10 +69,6 @@ public class IOInterface extends WordRecommender {
 		return percCorrectWords;
 	}
 
-	public void setPercCorrectWords(double percCorrectWords) {
-		this.percCorrectWords = percCorrectWords;
-	}
-
 	public int getCharCounts() {
 		return charCounts;
 	}
