@@ -143,8 +143,7 @@ public class IOInterface extends WordRecommender {
 	 */
 	public void printWordToDoc(PrintWriter pw, String word, boolean capitalize, boolean hasPunctuation, String punctuationString) {
 		// add word count to analysis
-		int currentWordCount = analysis.getWordCount();
-		analysis.setWordCount(currentWordCount++);
+		analysis.incrementWordCount();
 		
 		analysis.getSyllablesInWord(word);
 		
@@ -155,8 +154,7 @@ public class IOInterface extends WordRecommender {
 			endOfSentence = false;
 		}
 		else {
-			int sentenceWords = analysis.getWordsInCurrentSentence();
-			analysis.setWordsInCurrentSentence(sentenceWords++);
+			analysis.incrementWordsInCurrentSentence();
 		}
 		
 		if (capitalize == true) {
@@ -334,8 +332,7 @@ public class IOInterface extends WordRecommender {
 					}
 					else {
 						// update count of words checked
-						int newCheckedWords = analysis.getSpellCheckedWords();
-						analysis.setSpellCheckedWords(newCheckedWords++);
+						analysis.incrementSpellCheckedWords();
 						
 						/*
 						 * getWordSuggestions called here. Adjust variables to adjust set of words retrieved from dictionary.
@@ -366,9 +363,8 @@ public class IOInterface extends WordRecommender {
 
 								String command = userInput.nextLine();	
 								if (command.trim().equals("r") && rCommandAllowed == true) {
-									//update count of words replaced
-									int replacedWords = analysis.getWordsFromSuggestion();
-									analysis.setWordsFromSuggestion(replacedWords++);
+									// update count of words replaced
+									analysis.incrementWordsFromSuggestion();
 									
 									System.out.println("Your word will now be replaced with one of the suggestions");
 									System.out.println("Enter the number corresponding to the word that you want to use for replacement.");
@@ -390,15 +386,13 @@ public class IOInterface extends WordRecommender {
 								}
 								else if (command.trim().equals("a")) {
 									// update count of accepted words
-									int acceptedWords = analysis.getWordsAccepted();
-									analysis.setWordsAccepted(acceptedWords++);
+									analysis.incrementWordsAccepted();
 									
 									printWordToDoc(pw, word, capitalizeNext, punctuationFound, punctuation);
 								}
 								else if (command.trim().equals("t")) {
 									//update count of manually entered words
-									int manuallyUpdatedWords = analysis.getWordsFromManualEntry();
-									analysis.setWordsFromManualEntry(manuallyUpdatedWords++);
+									analysis.incrementWordsFromManualEntry();
 									
 									System.out.println("Please type the word that will be used as the replacement in the output file.");
 									String correctedWord = userInput.nextLine();
