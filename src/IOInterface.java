@@ -25,40 +25,14 @@ public class IOInterface extends WordRecommender {
 	 * Counting Instance Variables with Getters
 	 */
 
-	private int charCounts;
-	private double averageConsonantCount;
-	private double averageVowelCount;
-	private int totalVowelCount;
-	private int totalConsonantCount;
 	private SpellingAnalysis analysis = new SpellingAnalysis();
+	private vowelConsonantAnalysis vowelAnalysis = new vowelConsonantAnalysis();
 	private TextFormatting formatter = new TextFormatting();
 	private boolean endOfSentence = false;
-		
-	public double getAverageConsonantCount() {
-		return averageConsonantCount;
-	}
-
-	public double getAverageVowelCount() {
-		return averageVowelCount;
-	}
-
-	public int getTotalVowelCount() {
-		return totalVowelCount;
-	}
-
-	public int getTotalConsonantCount() {
-		return totalConsonantCount;
-	}
-
-	public int getCharCounts() {
-		return charCounts;
-	}
-
-	public void setCharCounts(int charCounts) {
-		this.charCounts = charCounts;
-	}
 	
-	
+	public vowelConsonantAnalysis getVowelAnalysis() {
+		return vowelAnalysis;
+	}
 	
 	public SpellingAnalysis getAnalysis() {
 		return analysis;
@@ -147,6 +121,9 @@ public class IOInterface extends WordRecommender {
 		
 		analysis.getSyllablesInWord(word);
 		
+		vowelAnalysis.vowelConsontantCounts(word);	
+		
+		vowelAnalysis.addCharCount(word.length());
 		
 		// check for end of sentence
 		if (endOfSentence) {
@@ -259,27 +236,6 @@ public class IOInterface extends WordRecommender {
 					 * 
 					 * Then will check misspelled words and will provide alternate word suggestions
 					 */
-
-					 
-					/*
-					 * Begins Total Word and Character analysis
-					 */
-
-					charCounts = charCounts + word.length();
-					
-					/*
-					 * Vowel and Consonant Analysis
-					 */
-					vowelConsonantAnalysis vowelAnalysis = new vowelConsonantAnalysis();
-					vowelAnalysis.vowelConsontantCounts(word);
-					vowelAnalysis.calculateAverageVowelandConsonantCounts(vowelAnalysis.getConsonantCounts());
-					averageConsonantCount = vowelAnalysis.getAverageCounts();
-					vowelAnalysis.calculateAverageVowelandConsonantCounts(vowelAnalysis.getVowelCounts());
-					averageVowelCount = vowelAnalysis.getAverageCounts();
-					totalConsonantCount = vowelAnalysis.getTotalConsonantCount();
-					totalVowelCount = vowelAnalysis.getTotalVowelCount();
-
-					
 
 					if(PatternChecker.isBigInteger(word) == true)
 					{

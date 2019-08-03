@@ -18,5 +18,6 @@ public class SpellChecker {
 		IOInterface instance = new IOInterface("engDictionary.txt");		
 		instance.askForInputMethod();
 		instance.getAnalysis().spellingAnalysisSuite();
+		instance.getVowelAnalysis().vandcAnalysisSuite();
 	}
 }
