@@ -39,6 +39,7 @@ public class Dictionary {
 			}	
 			scanner.close();
 		} catch (FileNotFoundException e) {
+			//TODO create dictionary file from backupdictionary file
 			System.out.println("No dictionary file present!");
 			e.printStackTrace();
 		}	
