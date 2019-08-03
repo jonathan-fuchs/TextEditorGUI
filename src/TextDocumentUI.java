@@ -73,8 +73,8 @@ public class TextDocumentUI {
     }
 	
     public JMenuBar createMenuBar() {
-        JMenu fileMenu, editMenu, formatMenu, reviewMenu;
-        JMenuItem menuItemNew, menuItemSave, menuItemSaveAs, menuItemOpen, menuItemCopy, menuItemCut, menuItemPaste, menuItemSelectAll, menuItemSpellCheck, menuItemResetDictionary, menuItemExit, menuItemHighlight, menuItemRemoveAllHighlights;
+        JMenu fileMenu, editMenu, formatMenu, fontSizeMenu, reviewMenu;
+        JMenuItem menuItemNew, menuItemSave, menuItemSaveAs, menuItemOpen, menuItemCopy, menuItemCut, menuItemPaste, menuItemSelectAll, menuItemSpellCheck, menuItemResetDictionary, menuItemExit, menuItemHighlight, menuItemRemoveAllHighlights, menuItemNormalFont, menuItemLargeFont, menuItemLargestFont;
         Action copy = new DefaultEditorKit.CopyAction();
         Action cut = new DefaultEditorKit.CutAction();
         Action paste = new DefaultEditorKit.PasteAction();
@@ -225,15 +225,7 @@ public class TextDocumentUI {
         	{
         		highlighter = (DefaultHighlighter)output.getHighlighter();
         		highlighter.setDrawsLayeredHighlights(false);
-        		try {
-        			//Highlight[] currentHighlights = painter.getHighlights();
-        			
-        			//for (int i = output.getSelectionStart(); i <= output.getSelectionEnd(); i++) {
-        				
-        				
-        				
-        			//}
-        			
+        		try {        			
         			highlighter.addHighlight(output.getSelectionStart(), output.getSelectionEnd(), new DefaultHighlighter.DefaultHighlightPainter(new Color(0xFAED27)));
 					output.setCaretPosition(output.getSelectionEnd());
 					
@@ -254,8 +246,50 @@ public class TextDocumentUI {
         	}
         });
         
+        fontSizeMenu = new JMenu("Font Size");
+        fontSizeMenu.setMnemonic(KeyEvent.VK_T);
+        fontSizeMenu.getAccessibleContext().setAccessibleDescription("Font Size Menu");
+        
+        
+        menuItemNormalFont = new JMenuItem("Normal Font Size", KeyEvent.VK_I);
+        menuItemNormalFont.getAccessibleContext().setAccessibleDescription("Sets font size to normal size in output component");
+        menuItemNormalFont.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e)
+        	{
+        		float size = (float) 12.0;
+        		output.setFont(output.getFont().deriveFont(size));
+        		output.updateUI();
+        	}
+        });
+        
+        menuItemLargeFont = new JMenuItem("Large Font Size", KeyEvent.VK_I);
+        menuItemLargeFont.getAccessibleContext().setAccessibleDescription("Sets font size to the large size in output component");
+        menuItemLargeFont.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e)
+        	{
+        		float size = (float) 20.0;
+        		output.setFont(output.getFont().deriveFont(size));
+        		output.updateUI();
+        	}
+        });
+        
+        menuItemLargestFont = new JMenuItem("Largest Font Size", KeyEvent.VK_I);
+        menuItemLargestFont.getAccessibleContext().setAccessibleDescription("Sets font size to largest size in output component");
+        menuItemLargestFont.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e)
+        	{
+        		float size = (float) 30.0;
+        		output.setFont(output.getFont().deriveFont(size));
+        		output.updateUI();
+        	}
+        });
+        
         formatMenu.add(menuItemHighlight);
         formatMenu.add(menuItemRemoveAllHighlights);
+        formatMenu.add(fontSizeMenu);
+        fontSizeMenu.add(menuItemNormalFont);
+        fontSizeMenu.add(menuItemLargeFont);
+        fontSizeMenu.add(menuItemLargestFont);
         
         
       //Build fourth menu in the menu bar.
@@ -402,6 +436,7 @@ public class TextDocumentUI {
         
     public void openDocument() {
       	
+    	dictionary = new WordRecommender(dictionaryFileName);
     	
     	documentText = "";
 
@@ -479,6 +514,7 @@ public class TextDocumentUI {
     }
     
     public void newDocument() {
+    	dictionary = new WordRecommender(dictionaryFileName);
     	documentName = "Untitled Document";
     	newDocument = true;
     	output.setText("");
@@ -551,7 +587,7 @@ public class TextDocumentUI {
         				currentLine = "";
         			}
         		}
-        		else if(!currentWord.equals("") && !dictionary.checkForExactWord(currentWord.toLowerCase())) {
+        		else if(!dictionary.checkForExactWord(currentWord.toLowerCase())) {
         			try {
         				// NOTE: the SquigglePainter highlighter is not our code. Please see note in SquigglePainter.java class
         				//Object currentHighlight = highlighter.addHighlight(overallIndex, overallIndex + currentWord.length(), new SquigglePainter(new Color(0xFF0000)));
@@ -600,11 +636,23 @@ public class TextDocumentUI {
         		JMenu misspelledWordItem = new JMenu(misspelledWord);
         		suggestionsMenu.add(misspelledWordItem);
         		menuIndex++;
+        		
+        		JMenuItem ignoreWord = new JMenuItem("Ignore word in document");
+        		ignoreWord.addActionListener(new ActionListener() {
+    	        	public void actionPerformed(ActionEvent e)
+    	        	{
+    	        		dictionary.getDictionary().addWordToDictionaries(misspelledWord.toLowerCase());
+    	        		dictionary.updateDictionaries();
+    	        		
+    	        		checkSpelling();
+    	        	}
+    	        });
+        		misspelledWordItem.add(ignoreWord);
+        		
         		JMenuItem addWordToDict = new JMenuItem("Add word to dictionary");
         		addWordToDict.addActionListener(new ActionListener() {
     	        	public void actionPerformed(ActionEvent e)
     	        	{
-    	        		
     	        		dictionary.getDictionary().addWordToDictionaries(misspelledWord.toLowerCase());
     	        		dictionary.updateDictionaries();
     	        		File dictionaryDocument = new File(dictionaryFileName);
@@ -615,8 +663,22 @@ public class TextDocumentUI {
 							pwDictionary.close();
 							fwDictionary.close();
 						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+						/*
+						 * If the dictionary file does not exist, tries to create a new dictionary file from the backup dictionary file, and then tries again.
+						 */
+							try {
+								Path backupDictionary = Paths.get(backupDictionaryFileName);
+			            		Path currentDictionary = Paths.get(dictionaryFileName);
+								Files.copy(backupDictionary, currentDictionary, StandardCopyOption.REPLACE_EXISTING);
+								FileWriter fwDictionary = new FileWriter(dictionaryDocument, true);
+								PrintWriter pwDictionary = new PrintWriter(fwDictionary);
+								pwDictionary.println(misspelledWord.toLowerCase());
+								pwDictionary.close();
+								fwDictionary.close();
+							} catch (IOException e2) {
+								// TODO Auto-generated catch block
+								e2.printStackTrace();
+							}
 						}
     	        		
     	        		checkSpelling();
