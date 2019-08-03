@@ -21,6 +21,7 @@ public class SpellingAnalysis {
 	
 	
 	public void spellingAnalysisSuite() {
+		System.out.println();
 		System.out.println("Here is some exciting analysis on your document: ");
 		System.out.println();
 		spellingPercentBreakdown();
@@ -40,11 +41,16 @@ public class SpellingAnalysis {
 		System.out.println("Spelling Breakdown");
 		System.out.println("------------------");
 		System.out.println();
-		System.out.println("Words Flagged by Spell Check: " + Double.toString(this.percentChecked) + "%");
-		System.out.println("Words Approved over Spell Check: " + Double.toString(this.percentAccepted) + "%");
-		System.out.println("Words Spelled Incorrectly: " + Double.toString(this.percentWrong) + "%");
-		System.out.println("Misspelled Words Corrected By Suggestion: " + Double.toString(this.percentFromSuggestion) + "%");
-		System.out.println("Misspelled Words Corrected By Manual Entry: " + Double.toString(this.percentFromManualEntry) + "%");
+		System.out.println("Total Words Flagged by Spell Check: " + this.spellCheckedWords);
+		System.out.println("Total Words Flagged by Spell Check, as % of Total Words: " + Double.toString(this.percentChecked * 100) + "%");
+		System.out.println("Total Words Misspelled: " + (int)wrongWords);
+		//System.out.println("Words Approved over Spell Check: " + Double.toString(this.percentAccepted * 100) + "%");
+		System.out.println("Total Words Misspelled, as % of Total Words: " + Double.toString(this.percentWrong * 100) + "%");
+		System.out.println();
+		System.out.println("Misspelled Words Corrected By Suggestion: " + this.wordsFromSuggestion);
+		System.out.println("Misspelled Words Corrected By Suggestion, as % of Misspelled Words: " + Double.toString(this.percentFromSuggestion * 100) + "%");
+		System.out.println("Misspelled Words Corrected By Manual Entry: " + this.wordsFromManualEntry);
+		System.out.println("Misspelled Words Corrected By Manual Entry, as % of Misspelled Words: " + Double.toString(this.percentFromManualEntry * 100) + "%");
 		System.out.println();
 	}
 	
@@ -138,6 +144,28 @@ public class SpellingAnalysis {
 		wordsInCurrentSentence = 0;
 	}
 	
+
+	
+	public void incrementWordCount() {
+		this.wordCount++;
+	}
+	
+	public void incrementSpellCheckedWords() {
+		this.spellCheckedWords++;
+	}
+	
+	public void incrementWordsFromSuggestion() {
+		this.wordsFromSuggestion++;
+	}
+	
+	public void incrementWordsFromManualEntry() {
+		this.wordsFromManualEntry++;
+	}
+	
+	public void incrementWordsAccepted() {
+		this.wordsAccepted++;
+	}
+	
 	
 	
 	
@@ -199,7 +227,9 @@ public class SpellingAnalysis {
 	}
 
 
-
+	public void incrementWordsInCurrentSentence() {
+		this.wordsInCurrentSentence++;
+	}
 	
 	
 }
