@@ -1,6 +1,5 @@
 
 import java.awt.*;
-//import java.awt.List;
 import java.awt.event.*;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -10,8 +9,6 @@ import javax.swing.WindowConstants;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.DefaultHighlighter;
-//import javax.swing.text.Highlighter;
-//import javax.swing.text.Highlighter.Highlight;
 import javax.swing.text.Highlighter;
 
 import java.io.*;
@@ -33,6 +30,8 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
  
 /**
+ * Class to add a GUI interface to the spell checking program
+ * 
  * I found this tutorial immensely helpful: https://docs.oracle.com/javase/tutorial/uiswing/components/menu.html
  * specifically, this: 
  * https://docs.oracle.com/javase/tutorial/displayCode.html?code=https://docs.oracle.com/javase/tutorial/uiswing/examples/components/MenuLookDemoProject/src/components/MenuLookDemo.java
