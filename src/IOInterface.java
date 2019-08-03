@@ -92,6 +92,12 @@ public class IOInterface extends WordRecommender {
 		        EventQueue.invokeLater(new Runnable() {
 		            public void run() {
 		                ui.createAndShowGUI();  
+		                
+		                EventQueue.invokeLater(new Runnable() {
+		                	public void run() {		                		
+		                		ui.getFrame().setAlwaysOnTop(false);
+		                	}
+		                });
 		            }
 		        });
 
