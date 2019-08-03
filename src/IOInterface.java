@@ -30,7 +30,7 @@ public class IOInterface extends WordRecommender {
 	private TextFormatting formatter = new TextFormatting();
 	private boolean endOfSentence = false;
 	private boolean oldUI = true;
-			
+
 	public boolean getOldUI() {
 		return oldUI;
 	}
