@@ -33,8 +33,6 @@ Through the new UI, there are file options to start new, open, save and exit the
 users can highlight text and change font size. And finally under review, users can deploy the spell check and readability metrics on the text entered in
 the UI.
 
-
-
 ------
 
 Testing
