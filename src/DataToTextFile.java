@@ -26,27 +26,36 @@ public class DataToTextFile {
 	 */
 	
 	int counter = 1;
-	for (int i = 0; i < columnNum; i++, counter++) {
-		System.out.println("Enter the name of column " + counter + ":");
-		String name =sc.nextLine();
-		sc.hasNextLine();
-		ColumnNames.add(name);
-		
+
+	for (int i = 0; i < columnNum; i++, counter++) { 
+		System.out.print("Enter the name of column " + counter + ":");
+		String name = "";
+		while (sc.hasNextLine()) {
+			name = sc.nextLine();	
+			if (!name.equals("")) {
+				break;
+			}			
+		}
+		ColumnNames.add(name);	
 	}
 
 	/*
 	 * Asks for row data
 	 */
-	
+
 	for (int k = 1; k <= rowNum; k++) {
 		ArrayList<String> temp = new ArrayList<String>();
 		listOfLists.add(temp);
 		for (int j = 1; j <= columnNum; j++) {
-		  System.out.println("Enter data for column " + j + ", row " + k + ":");
-		  String fn=sc.nextLine();
-		  sc.hasNextLine();
-		  temp.add(fn);
-
+			String fn = "";
+			System.out.print("Enter data for column " + j + ", row " + k + ":");
+			while (sc.hasNextLine()) {
+				fn=sc.nextLine();
+				temp.add(fn);
+				if (!fn.equals("")) {
+					break;
+				}	
+			}
 		}
 	}
 	

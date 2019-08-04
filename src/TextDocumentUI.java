@@ -32,62 +32,97 @@ import javax.swing.JFrame;
 /**
  * Class to add a GUI interface to the spell checking program
  * 
- * I found this tutorial immensely helpful: https://docs.oracle.com/javase/tutorial/uiswing/components/menu.html
+ * <p>Menu functionality includes:<ul>
+ * <li> File menu: create a new document, open a text document from a file, save a currently opened document, save the current document as a new document, exit the program.
+ * <li> Edit menu: cut text to system clipboard, copy text to system clipboard, paste text from system clipboard, select all text. 
+ * <li> Format menu: highlight selected text, remove all highlights, set global font size to one of three settings.
+ * <li> Review menu: spell check text in GUI JTextPane, reset dictionary (i.e., remove all words added to dictionary), display readability score in Eclipse console.
+ * <li> Suggestion menu (appears once 'Spell Check' function runs, when spelling mistakes have been found): menu for each misspelled word found.
+ * <ul><li> Each misspelled word's menu offers options to ignore all appearances of the word until the program closes 
+ * <li>Add the word to the dictionary 
+ * <li>Any alternate word suggestions. If one of these alternate words is selected, the misspelled word will be replaced in the JTextPane with the alternate word, and 
+ * the highlighter object marking that misspelled word will be removed. 
+ * </ul>
+ * <li>Current file name menu: the name of this menu updates depending on which file is currently open 
+ * </ul></p>
+ * 
+ * <p> Additional functionality:<ul>
+ * <li> After spell check is run, misspelled words will be underlined with a red squiggle. (NOTE: code for red squiggle highlighter was written by another developer. 
+ * See SquigglePainter class for more details.) 
+ * <li> Punctuation and capitalization is correctly handled by spell check.
+ * <li> Many menu commands have keyboard shortcuts. Many menu commands also have hotkeys when menu is open.
+ * <li> If text extends past current window size, a scroll bar will be created
+ * </ul></p>
+ * 
+ * <p> I found this tutorial for creating menu items immensely helpful: https://docs.oracle.com/javase/tutorial/uiswing/components/menu.html
  * specifically, this: 
  * https://docs.oracle.com/javase/tutorial/displayCode.html?code=https://docs.oracle.com/javase/tutorial/uiswing/examples/components/MenuLookDemoProject/src/components/MenuLookDemo.java
  * 
- * @author Jonathan
+ * @author Jonathan Fuchs
  *
  */
 public class TextDocumentUI {
 	
 	private JFrame frame;
 	private JTextPane output;
+	private String documentText;
 	private JScrollPane scrollPane;
-	private String documentName = "Untitled Document";
-	private String titleBar = "Document Editor GUI";
 	private JMenuBar menuBar;
 	private JMenuItem suggestionsMenu = new JMenu("Suggestions");;
-	private JMenu currentFile;
-	private Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-
-	private String documentText;
+	
 	private JDialog popUpWindow;
 	private JTextField popUpWindowTextField;
-     
+	private Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+
+	private String titleBar = "Document Editor GUI";
+	private String documentName = "Untitled Document";
+	private JMenu currentFileName;
 	private boolean newDocument = true;
 	private File document;
+
 	private DefaultHighlighter highlighter;
 	
 	private String dictionaryFileName = "engDictionary.txt";
 	private String backupDictionaryFileName = "engDictionary_backup.txt";
 	private WordRecommender dictionary = new WordRecommender(dictionaryFileName);
-	private ArrayList<ArrayList<String>> menuSuggestions = new ArrayList<>();
-	//HashMap<Object, ArrayList<String>> wordSuggestions = new HashMap<>();
-	//HashMap<String, ArrayList<String>> menuSuggestions = new HashMap<>();
+	private ArrayList<ArrayList<String>> menuSuggestions = new ArrayList<>();	
 	
-	
+	/**
+	 * Getter method for JFrame component. Used by IOInterface to manipulate .setAlwaysOnTop property.
+	 * .setAlwaysOnTop is initially set to true so that the GUI window will come to system foreground, but
+	 * should then be set to false so that other windows may later come to the foreground.
+	 * 
+	 * @return frame
+	 */
     public JFrame getFrame() {
     	return frame;
     }
 	
+    /**
+     * Method to create GUI MenuBar
+     * 
+     * @return menuBar
+     */
     public JMenuBar createMenuBar() {
         JMenu fileMenu, editMenu, formatMenu, fontSizeMenu, reviewMenu;
-        JMenuItem menuItemNew, menuItemSave, menuItemSaveAs, menuItemOpen, menuItemCopy, menuItemCut, menuItemPaste, menuItemSelectAll, menuItemSpellCheck, menuItemResetDictionary, menuItemExit, menuItemHighlight, menuItemRemoveAllHighlights, menuItemNormalFont, menuItemLargeFont, menuItemLargestFont;
+        JMenuItem menuItemNew, menuItemSave, menuItemSaveAs, menuItemOpen, menuItemExit;
+        JMenuItem menuItemCopy, menuItemCut, menuItemPaste, menuItemSelectAll;
+        JMenuItem menuItemHighlight, menuItemRemoveAllHighlights, menuItemNormalFont, menuItemLargeFont, menuItemLargestFont;
+        JMenuItem menuItemSpellCheck, menuItemResetDictionary, menuItemReadabilityScore;
         Action copy = new DefaultEditorKit.CopyAction();
         Action cut = new DefaultEditorKit.CutAction();
         Action paste = new DefaultEditorKit.PasteAction();
  
-        //Create the menu bar.
+        // Create the menu bar.
         menuBar = new JMenuBar();
  
-        //Build the first menu.
+        // Build File menu. Hotkey is 'f'
         fileMenu = new JMenu("File");
         fileMenu.setMnemonic(KeyEvent.VK_F);
         fileMenu.getAccessibleContext().setAccessibleDescription("File menu");
         menuBar.add(fileMenu);
  
-        //a group of JMenuItems
+        // File menu item to create a new document. Hotkey is 'n' and keyboard shortcut is "ctrl + s".
         menuItemNew = new JMenuItem("New", KeyEvent.VK_N);
         menuItemNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
         menuItemNew.getAccessibleContext().setAccessibleDescription("Create a new file");
@@ -98,8 +133,7 @@ public class TextDocumentUI {
         	}
         });
         
-        
-        
+        // File menu item to save current document. Hotkey is 's' and keyboard shortcut is "ctrl + s".
         menuItemSave = new JMenuItem("Save", KeyEvent.VK_S);
         menuItemSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
         menuItemSave.getAccessibleContext().setAccessibleDescription("Save the current file");
@@ -112,16 +146,12 @@ public class TextDocumentUI {
         		else {
         			createPopUpWindow("Save As");
         		}
-        		
-        		
         	}
         });
         
-        
-        
-
+        // File menu item to save current text as a new document. Keyboard shortcut is "ctrl + shift + a".
         menuItemSaveAs = new JMenuItem("Save As");
-        menuItemSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK + + ActionEvent.SHIFT_MASK));
+        menuItemSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));
         menuItemSaveAs.getAccessibleContext().setAccessibleDescription("Save As for the current file");
         menuItemSaveAs.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e)
@@ -130,7 +160,7 @@ public class TextDocumentUI {
         	}
         });
         
-        
+        // File menu item to open a document. Hotkey is 'o' and keyboard shortcut is "ctrl + o".
         menuItemOpen = new JMenuItem("Open", KeyEvent.VK_O);
         menuItemOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
         menuItemOpen.getAccessibleContext().setAccessibleDescription("Open an existing file");
@@ -138,12 +168,10 @@ public class TextDocumentUI {
         	public void actionPerformed(ActionEvent e)
         	{
         		createPopUpWindow("Open");
-        		
-        		//javax.swing.SwingUtilities.invokeLater(new Runnable() {public void run() {frame.setTitle(documentName);}});
-        		
         	}
         });
         
+        // File menu item to exit program. Hotkey is 'x' and keyboard shortcut is "alt + F4".
         menuItemExit = new JMenuItem("Exit", KeyEvent.VK_X);
         menuItemExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
         menuItemExit.getAccessibleContext().setAccessibleDescription("Close the program");
@@ -154,34 +182,36 @@ public class TextDocumentUI {
         	}
         });
         
+        // Adds menu items to File menu
         fileMenu.add(menuItemNew);
         fileMenu.add(menuItemSave);
         fileMenu.add(menuItemSaveAs);
         fileMenu.add(menuItemOpen);
-        
         fileMenu.addSeparator();
-        
         fileMenu.add(menuItemExit);
  
-      //Build second menu in the menu bar.
         
+        // Build Edit menu. Hotkey is 'e'
         editMenu = new JMenu("Edit");
         editMenu.setMnemonic(KeyEvent.VK_E);
         editMenu.getAccessibleContext().setAccessibleDescription("Edit Menu");
         menuBar.add(editMenu);
         
+        // Edit menu item to copy currently selected text to system clipboard. Hotkey is 'c' and keyboard shortcut is "ctrl + c".
         menuItemCopy = new JMenuItem(copy);
         menuItemCopy.setMnemonic(KeyEvent.VK_C);
         menuItemCopy.setText("Copy");
         menuItemCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
         menuItemCopy.getAccessibleContext().setAccessibleDescription("Copies selected text in the current document");
        
+        // Edit menu item to cut currently selected text to system clipboard. Hotkey is 't' and keyboard shortcut is "ctrl + x".
         menuItemCut = new JMenuItem(cut);
         menuItemCut.setMnemonic(KeyEvent.VK_T);
         menuItemCut.setText("Cut");
         menuItemCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
         menuItemCut.getAccessibleContext().setAccessibleDescription("Cuts selected text in the current document");
-        
+
+        // Edit menu item to paste text from system clipboard. Hotkey is 'p' and keyboard shortcut is "ctrl + v".
         menuItemPaste = new JMenuItem(paste);
         menuItemPaste.setMnemonic(KeyEvent.VK_P);
         menuItemPaste.setText("Paste");
@@ -189,8 +219,7 @@ public class TextDocumentUI {
         menuItemPaste.getAccessibleContext().setAccessibleDescription("Pastes selected text in the current document");
         
         
-        
-        
+        // Edit menu item to select all text in JTextPane. Hotkey is 'a' and keyboard shortcut is "ctrl + a".
         menuItemSelectAll = new JMenuItem("Select All", KeyEvent.VK_A);
         menuItemSelectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
         menuItemSelectAll.getAccessibleContext().setAccessibleDescription("Select all text in the current document");
@@ -201,22 +230,21 @@ public class TextDocumentUI {
         	}
         });
         
+        // Adds menu items to Edit menu
         editMenu.add(menuItemCopy);
         editMenu.add(menuItemCut);
         editMenu.add(menuItemPaste);
         editMenu.addSeparator();
-        
         editMenu.add(menuItemSelectAll);
         
         
-        
-      //Build third menu in the menu bar.
-        
+        // Build Format menu. Hotkey is 'o'
         formatMenu = new JMenu("Format");
         formatMenu.setMnemonic(KeyEvent.VK_O);
         formatMenu.getAccessibleContext().setAccessibleDescription("Format Menu");
         menuBar.add(formatMenu);
         
+        // Format menu item to highlight currently selected text in JTextPane. Hotkey is 'h'
         menuItemHighlight = new JMenuItem("Highlight Text", KeyEvent.VK_H);
         menuItemHighlight.getAccessibleContext().setAccessibleDescription("Highlights text in yellow");
         menuItemHighlight.addActionListener(new ActionListener() {
@@ -235,6 +263,7 @@ public class TextDocumentUI {
         	}
         });
         
+        // Format menu item to remove all highlights from JTextPane. Will also remove highlights created by spell check. Hotkey is 'r'
         menuItemRemoveAllHighlights = new JMenuItem("Remove Highlights", KeyEvent.VK_R);
         menuItemRemoveAllHighlights.getAccessibleContext().setAccessibleDescription("Removes all highlights");
         menuItemRemoveAllHighlights.addActionListener(new ActionListener() {
@@ -245,12 +274,13 @@ public class TextDocumentUI {
         	}
         });
         
+        // Format submenu listing several font size options. Hotkey is 't'
         fontSizeMenu = new JMenu("Font Size");
         fontSizeMenu.setMnemonic(KeyEvent.VK_T);
         fontSizeMenu.getAccessibleContext().setAccessibleDescription("Font Size Menu");
         
-        
-        menuItemNormalFont = new JMenuItem("Normal Font Size", KeyEvent.VK_I);
+        // Font submenu item to set global font size to "normal" size.
+        menuItemNormalFont = new JMenuItem("Normal Font Size");
         menuItemNormalFont.getAccessibleContext().setAccessibleDescription("Sets font size to normal size in output component");
         menuItemNormalFont.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e)
@@ -260,8 +290,9 @@ public class TextDocumentUI {
         		output.updateUI();
         	}
         });
-        
-        menuItemLargeFont = new JMenuItem("Large Font Size", KeyEvent.VK_I);
+
+        // Font submenu item to set global font size to "large" size.
+        menuItemLargeFont = new JMenuItem("Large Font Size");
         menuItemLargeFont.getAccessibleContext().setAccessibleDescription("Sets font size to the large size in output component");
         menuItemLargeFont.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e)
@@ -271,8 +302,9 @@ public class TextDocumentUI {
         		output.updateUI();
         	}
         });
-        
-        menuItemLargestFont = new JMenuItem("Largest Font Size", KeyEvent.VK_I);
+
+        // Font submenu item to set global font size to "largest" size.
+        menuItemLargestFont = new JMenuItem("Largest Font Size");
         menuItemLargestFont.getAccessibleContext().setAccessibleDescription("Sets font size to largest size in output component");
         menuItemLargestFont.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e)
@@ -283,6 +315,7 @@ public class TextDocumentUI {
         	}
         });
         
+        // Adds menu items to Format menu and Font submenu
         formatMenu.add(menuItemHighlight);
         formatMenu.add(menuItemRemoveAllHighlights);
         formatMenu.add(fontSizeMenu);
@@ -291,7 +324,7 @@ public class TextDocumentUI {
         fontSizeMenu.add(menuItemLargestFont);
         
         
-      //Build fourth menu in the menu bar.
+        // Build Review menu. Hotkey is 'r'
         reviewMenu = new JMenu("Review");
         reviewMenu.setMnemonic(KeyEvent.VK_R);
         reviewMenu.getAccessibleContext().setAccessibleDescription("Review Menu");
@@ -331,17 +364,85 @@ public class TextDocumentUI {
         	}
         });
         
+        menuItemReadabilityScore = new JMenuItem("Readability Score", KeyEvent.VK_S);
+        menuItemReadabilityScore.getAccessibleContext().setAccessibleDescription("Calculates readability score for current document");
+        menuItemReadabilityScore.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e)
+        	{
+        		SpellingAnalysis sAnalysis = new SpellingAnalysis();            	
+            	String currentText = output.getText();
+            	Scanner docScanner = new Scanner(currentText);
+            	
+            	while (docScanner.hasNextLine()) {
+            		String currentLine = docScanner.nextLine();
+            		//String currentWord;
+            		
+            		while (!currentLine.equals("")) {
+            			
+                		int spaceIndex = PatternChecker.detectSpaces(currentLine);
+                		int punctuationIndex = PatternChecker.detectPunctuation(currentLine);
+                		if (punctuationIndex == 0 || spaceIndex == 0) {
+                			if (currentLine.length() == 1) {
+                				currentLine = "";
+                			}
+                			else {
+                				currentLine = currentLine.substring(1);
+                			}
+                		}
+                		else if (punctuationIndex == -1 && spaceIndex == -1) {
+                			sAnalysis.incrementWordsInCurrentSentence();
+                			sAnalysis.getSyllablesInWord(currentLine);
+                			currentLine = "";
+                			//TODO deal with line breaks
+                		}
+                		// no punctuation but there is a space
+                		else if (punctuationIndex == -1 || ((spaceIndex > -1) && (spaceIndex < punctuationIndex))) {
+                			// add 1 to the sentence word count
+                			sAnalysis.incrementWordsInCurrentSentence();
+                			sAnalysis.getSyllablesInWord(currentLine.substring(0, spaceIndex));
+                			// slice currentLine after next word
+                			if (spaceIndex == currentLine.length()) {
+                				currentLine = "";
+                			}
+                			else {
+                				currentLine = currentLine.substring(spaceIndex + 1);
+                			}
+                			
+                		}
+                		else {
+                		//there is punctuation before the next space
+                		// equivalent to: else if (spaceIndex == -1 || ((punctuationIndex > -1) && (punctuationIndex < spaceIndex))) 
+                			sAnalysis.incrementWordsInCurrentSentence();
+                			sAnalysis.getSyllablesInWord(currentLine.substring(0, punctuationIndex));
+                			sAnalysis.getSentenceLength();
+                			
+                			if (punctuationIndex == currentLine.length()) {
+                				currentLine = "";
+                			}
+                			else {
+                				currentLine = currentLine.substring(punctuationIndex + 1);
+                			}
+                		}
+            		}
+            	}
+            	sAnalysis.approxReadability();
+            	docScanner.close();
+        	}
+        });
+        
         reviewMenu.add(menuItemSpellCheck);
         reviewMenu.add(menuItemResetDictionary);
+        reviewMenu.addSeparator();
+        reviewMenu.add(menuItemReadabilityScore);
         
         //Fifth menu is the suggestionsMenu and is created when running spellCheck
 
         
         
         // Sixth menu in menu bar is just a label
-        currentFile = new JMenu(documentName);
+        currentFileName = new JMenu(documentName);
         
-        menuBar.add(currentFile);
+        menuBar.add(currentFileName);
         
         //System.out.println(menuBar.getComponent(4));
         
@@ -458,7 +559,7 @@ public class TextDocumentUI {
 
     	//createAndShowGUI();
     	output.setText(documentText);
-    	currentFile.setText(documentName);
+    	currentFileName.setText(documentName);
     	
     	menuBar.remove(suggestionsMenu);
     	suggestionsMenu = new JMenu("Suggestions");
@@ -503,7 +604,7 @@ public class TextDocumentUI {
 			pw.flush();
 			pw.close();
 			fw.close();
-			currentFile.setText(documentName);
+			currentFileName.setText(documentName);
 	        menuBar.updateUI();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -517,7 +618,7 @@ public class TextDocumentUI {
     	documentName = "Untitled Document";
     	newDocument = true;
     	output.setText("");
-    	currentFile.setText(documentName);
+    	currentFileName.setText(documentName);
     	
     	menuBar.remove(suggestionsMenu);
     	suggestionsMenu = new JMenu("Suggestions");
