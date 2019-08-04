@@ -57,20 +57,20 @@ public class IOInterface extends WordRecommender {
 	public void askForInputMethod() {
 		
 		Scanner IOMethod = new Scanner(System.in);
-		System.out.print("Enter 'o' for old interface, 'n' for new interface: ");
+		System.out.print("Enter '1' to launch a Graphical User Interface, '2' to upload your own text file, or '3' to create a new data table text file: ");
 		
 		boolean repeat = true;
 		
 		while (repeat == true) {
 			String io = IOMethod.nextLine().trim();
 			
-			if (io.equals("o")) {
+			if (io.equals("2")) {
 				repeat = false;
 				askForDocument();
 			
 				
 			}
-			else if (io.equals("n")) {
+			else if (io.equals("1")) {
 				oldUI = false;
 
 				repeat = false;
@@ -87,6 +87,16 @@ public class IOInterface extends WordRecommender {
 		                });
 		            }
 		        });
+
+			}
+			
+			else if (io.equals("3")) {
+				oldUI = false;
+				repeat = false;
+				DataToTextFile t = new DataToTextFile();
+				t.display();
+				t.insert();
+				System.out.println("Your data table file has been created under the name: 'Database.txt' in this program's root folder");
 
 			}
 			else {

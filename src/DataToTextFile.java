@@ -97,15 +97,5 @@ public class DataToTextFile {
 		}
 		catch(Exception e) {}
 	}
-	
-	/**
-	 * Main Method
-	 * @param ar
-	 */
-	public static void main(String ar[]) {
-		DataToTextFile t = new DataToTextFile();
-		t.display();
-		t.insert();
-	}
-	
+
 }
