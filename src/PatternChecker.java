@@ -68,13 +68,13 @@ public class PatternChecker {
 	 * Method for detecting punctuation in the document. 
 	 * 
 	 * TODO add handling for double and single quotation marks
-	 * Pattern will then be: "[,.!?\\-\"\']"
+	 * Pattern will then be: "[,.!?\\-;:\"\']"
 	 * 
 	 * @param str string to be checked for punctuation
 	 * @return -1 if no punctuation found, else the first index of a punctuation mark
 	 */
 	public static int detectPunctuation(String str) {
-		Pattern pattern = Pattern.compile("[,.!?\\-]");
+		Pattern pattern = Pattern.compile("[,.!?\\-;:]");
 		Matcher matcher = pattern.matcher(str); 
 		
 		if (matcher.find() == false) {
@@ -83,11 +83,13 @@ public class PatternChecker {
 		return matcher.start();
 	}
 	
-	
-	
-	
-	
-	public static int detectNonPunctuation(String str) {
+	/**
+	 * Method for detecting earliest 'word character' in a String. Detects letter, digit, or underscore. 
+	 *  
+	 * @param str
+	 * @return -1 if no 'word character' found, else returns the index of the earliest 'word character' 
+	 */
+	public static int detectNonPunctuationNonSpace(String str) {
 		Pattern pattern = Pattern.compile("[\\w]");
 		Matcher matcher = pattern.matcher(str); 
 		
@@ -97,8 +99,12 @@ public class PatternChecker {
 		return matcher.start();
 	}
 	
-	
-	
+	/**
+	 * Method for detecting the earliest non-whitespace character in a String.
+	 *  
+	 * @param str
+	 * @return -1 if no 'non-whitespace character' detected, else returns the index of the earliest 'non-whitespace character'
+	 */
 	public static int detectNonSpaces(String str) {
 		Pattern pattern = Pattern.compile("[^\\s]");
 		Matcher matcher = pattern.matcher(str); 
@@ -109,8 +115,30 @@ public class PatternChecker {
 		return matcher.start();
 	}
 	
+	/**
+	 * Method for detecting the earliest whitespace character in a String.
+	 *  
+	 * @param str
+	 * @return -1 if no 'whitespace character' detected, else returns the index of the earliest 'whitespace character'
+	 */
 	public static int detectSpaces(String str) {
 		Pattern pattern = Pattern.compile("[\\s]");
+		Matcher matcher = pattern.matcher(str); 
+		
+		if (matcher.find() == false) {
+			return -1;
+		}
+		return matcher.start();
+	}
+	
+	/**
+	 * Method for detecting sentence-ending punctuation in the document. 
+	 * 
+	 * @param str string to be checked for punctuation
+	 * @return -1 if no punctuation found, else the first index of a punctuation mark typically used in ending a sentence
+	 */
+	public static int detectSentenceEndingPunctuation(String str) {
+		Pattern pattern = Pattern.compile("[.!?]");
 		Matcher matcher = pattern.matcher(str); 
 		
 		if (matcher.find() == false) {
