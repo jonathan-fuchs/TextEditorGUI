@@ -1,17 +1,39 @@
 README:
-Jonathan Fuchs
-MCIT 591 - Assignment 4 - Spell Checker
+Jonathan Fuchs, Adam Schneider, Melissa Wu
+MCIT 591 - Group Assignment - Spell Checker Plus
 
-In order to run this program, please import all files into your eclipse IDE and run SpellChecker.java.
+To run this program, please import all files into your eclipse IDE and run SpellChecker.java. The default dictionary is "engDictionary.txt", and a text
+document is needed for the old interface. The new UI can operate without an existing text document.
 
 ------
 
-In order to improve the similarity metric algorithm, I would also give weight to shared sequences of consecutive letters. 
-For example, if the typo was "testt" and the intended word was "test", the rightSimilarity score would only be 1, 
-whereas both share the string "tset" (reading right-to-left).
+This program is an extension of the Spell Checker project from Week 4, with three key areas of additional functionality:
+- Text Formatting
+- Analysis
+- New UI
 
-I would also allow for the suggested words to include words with apostrophes. I designed my code to have an isolate-able for-loop responsible 
-for removing words with apostrophes (as commented in the code); in an improved version of this code, I would remove that for-loop.
 
-Finally, the getWordSuggestions and getWordsWithCommonLetters methods both require the comparison of sets. My suggestion for improving the design 
-as-given would be to also specify a helper method for comparing sets that would be used by both of the other two methods.
+Text Formatting
+
+This includes sentence capitalization, punctuation, and line breaks to the checked document. Capitalization and punctuation are adding in based
+on the checked document, and line breaks are added at a default of 80 characters, where the user can change this default.
+
+Analysis
+
+The analysis is centered around character, word, and spell checking. Characters, vowels and consonants are all tracked in the vowelAnalysis class,
+and SpellingAnalysis tracks word, sentence, syllable, spelling and readability metrics. These are counted during iterations through the document and then summarized for
+the user upon completion.
+
+New UI
+
+The new UI is a text document creator and editor that includes the some of the spell checking and analysis that is available to the rest of the program.
+Through the new UI, there are file options to start new, open, save and exit the program. Under Edit, there is the ability to copy and paste. Under Format,
+users can highlight text and change font size. And finally under review, users can deploy the spell check and readability metrics on the text entered in
+the UI.
+
+
+------
+
+Testing
+
+The tests written for SpellingAnalysis, PatternChecker, and DataToTextFile test if expected values are returned when run on files with known outcomes.
