@@ -1,6 +1,13 @@
 import java.util.ArrayList;
 
+/**
+ * This class collects a variety of metrics about the document and spell checking process in order to
+ * provide the user with feedback on their spelling and readability.
+ * @author aschn
+ *
+ */
 public class SpellingAnalysis {
+	// collected during review of document
 	private int wordCount = 0;
 	private int spellCheckedWords = 0;
 	private int wordsFromSuggestion = 0;
@@ -10,6 +17,7 @@ public class SpellingAnalysis {
 	private int wordsInCurrentSentence = 0;
 	private ArrayList<Integer> syllableCounts = new ArrayList<Integer>();
 	
+	// calculations based on collected data above
 	private double percentChecked;
 	private double percentWrong;
 	private double percentFromSuggestion;
@@ -20,6 +28,9 @@ public class SpellingAnalysis {
 	private double readingGradeLevel;
 	
 	
+	/**
+	 * Introduces print out of analysis and then runs all analysis methods 
+	 */
 	public void spellingAnalysisSuite() {
 		System.out.println();
 		System.out.println("Here is some exciting analysis on your document: ");
@@ -28,6 +39,12 @@ public class SpellingAnalysis {
 		approxReadability();
 	}
 	
+	/**
+	 * Calculates all the metrics about spelling correctness, and user choices for Spell Checked words;
+	 * Also, method assumes that if a user "accepts" a word, that it was not misspelled and the spell checker
+	 * was wrong. As a result, this analysis labels those outcomes separately and calculates based on that assumption.
+	 * After calculating, analysis is printed to console.
+	 */
 	public void spellingPercentBreakdown() {
 		double wrongWords = (double)this.wordsFromSuggestion + this.wordsFromManualEntry;
 		
@@ -53,17 +70,13 @@ public class SpellingAnalysis {
 		System.out.println("Misspelled Words Corrected By Manual Entry, as % of Misspelled Words: " + Double.toString(this.percentFromManualEntry * 100) + "%");
 		System.out.println();
 	}
-	
+
 	
 	/**
-	 * based on some publicly available resource, how does spelling in document compare?
-	 * Possibly grade level? Possibly compared to news sources? 
+	 * Similar to above, generates reading ease and grade level scores for the text sample, based
+	 * on the formulas outlined below.
+	 * Once calculated, prints the results to the console.
 	 */
-//	public void spellingComparison() {
-//		
-//	}
-	
-	
 	public void approxReadability() {
 		/**
 		 * formula for Flesch Reading Ease readability:
@@ -145,7 +158,10 @@ public class SpellingAnalysis {
 	}
 	
 
-	
+	/**
+	 * The following Increment methods are used to increment the instance variables when they occur in the
+	 * IOInterface class
+	 */
 	public void incrementWordCount() {
 		this.wordCount++;
 	}
@@ -167,7 +183,10 @@ public class SpellingAnalysis {
 	}
 	
 	
-	
+	/**
+	 * Getters and setters for instance variables
+	 * 
+	 */
 	
 	public int getWordCount() {
 		return wordCount;

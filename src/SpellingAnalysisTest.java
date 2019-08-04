@@ -9,14 +9,6 @@ class SpellingAnalysisTest {
 	@AfterAll
 	static void tearDownAfterClass() throws Exception {
 	}
-
-//	@Test
-//	void testTotalWordsMisspelled() {
-//		SpellingAnalysis test = new SpellingAnalysis();
-//		test.totalWordsMisspelled();
-//		// test with "the cat went ouut of the dor"
-//		fail("Not yet implemented");
-//	}
 	
 	@Test
 	void testGetSyllablesInWord1() {
@@ -52,5 +44,22 @@ class SpellingAnalysisTest {
 		test.getSyllablesInWord("aptitude");
 		assertEquals(4, test.getSyllableCounts().get(0));
 	}
+	
+	@Test
+	void testSpellingAnalysisSuite1() {
+		IOInterface io = new IOInterface("engDictionary.txt");
+		io.askForInputMethod();
+		io.getAnalysis().spellingAnalysisSuite();
+		assertEquals(5, io.getAnalysis().getSpellCheckedWords());
+	}
+	
+//	@Test
+//	void testSpellingAnalysisSuite2() {
+//		IOInterface io = new IOInterface("engDictionary.txt");
+//		//using sampleText.txt
+//		io.askForInputMethod();
+//		io.getAnalysis().spellingAnalysisSuite();
+//		assertEquals(71, io.getAnalysis().getWordCount());
+//	}
 
 }
