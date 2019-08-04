@@ -9,13 +9,6 @@ public class TextFormatting {
 	 * @param charsPerLine
 	 */
 	public void addLineBreaks (PrintWriter pw) {
-//		int lengthOfLine;
-//		if (this.charsPerLine < 6) {
-//			lengthOfLine = 80;
-//		}
-//		else {
-//			lengthOfLine = this.charsPerLine;
-//		}
 		
 		if (this.lineCharLength >= this.charsPerLine) {
 			pw.println();
