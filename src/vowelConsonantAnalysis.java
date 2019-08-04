@@ -1,5 +1,19 @@
 import java.util.ArrayList;
 
+
+/**
+ * Class to conduct character, vowel, and consonant  spell checking program
+ * 
+ * <p>Class functionality includes:<ul>
+ * <li> Calculates the total number of characters in the file
+ * <li> Calculates the total number of vowels and consonants in the file
+ * <li> Calculates the average number of vowels and consonants in each word in the file
+ * </ul></p>
+ * 
+ * 
+ * @author Melissa Wu
+ *
+ */
 public class vowelConsonantAnalysis {
 	
 	private int totalVowelCount;
