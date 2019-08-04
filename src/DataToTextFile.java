@@ -28,7 +28,8 @@ public class DataToTextFile {
 	int counter = 1;
 	for (int i = 0; i < columnNum; i++, counter++) {
 		System.out.println("Enter the name of column " + counter + ":");
-		String name =sc.next();
+		String name =sc.nextLine();
+		sc.hasNextLine();
 		ColumnNames.add(name);
 		
 	}
@@ -42,7 +43,8 @@ public class DataToTextFile {
 		listOfLists.add(temp);
 		for (int j = 1; j <= columnNum; j++) {
 		  System.out.println("Enter data for column " + j + ", row " + k + ":");
-		  String fn=sc.next();
+		  String fn=sc.nextLine();
+		  sc.hasNextLine();
 		  temp.add(fn);
 
 		}
