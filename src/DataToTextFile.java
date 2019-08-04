@@ -25,7 +25,6 @@ public class DataToTextFile {
 	 * Asks for column names
 	 */
 	
-
 	int counter = 1;
 
 	for (int i = 0; i < columnNum; i++, counter++) { 
@@ -43,7 +42,6 @@ public class DataToTextFile {
 	/*
 	 * Asks for row data
 	 */
-
 
 	for (int k = 1; k <= rowNum; k++) {
 		ArrayList<String> temp = new ArrayList<String>();
@@ -110,15 +108,5 @@ public class DataToTextFile {
 		}
 		catch(Exception e) {}
 	}
-	
-	/**
-	 * Main Method
-	 * @param ar
-	 */
-	public static void main(String ar[]) {
-		DataToTextFile t = new DataToTextFile();
-		t.display();
-		t.insert();
-	}
-	
+
 }
