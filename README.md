@@ -18,7 +18,8 @@ This program is an extension of the Spell Checker project from Week 4, with thre
 Text Formatting
 
 This includes sentence capitalization, punctuation, and line breaks to the checked document. Capitalization and punctuation are adding in based
-on the checked document, and line breaks are added at a default of 80 characters, where the user can change this default.
+on the checked document, and line breaks are added at a default of 80 characters, where the user can change this default. There is also the ability to create a table and
+output it as a textfile.
 
 Analysis
 
