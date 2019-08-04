@@ -1,5 +1,11 @@
 import java.io.PrintWriter;
 
+/**
+ * Class that reads and updates the length of each line in user's document by character
+ * and, before exceeding the length set by charsPerLine, adds a line break.
+ * @author aschn
+ *
+ */
 public class TextFormatting {
 	private int lineCharLength = 0;
 	private int charsPerLine = 80;

@@ -1,6 +1,22 @@
 import java.io.*;
 import java.util.*;
 
+
+/**
+ * Class that adds a text-to-database function to the spell checking program
+ * 
+ * <p>Class functionality includes:<ul>
+ * <li> Prompting user to specify the number of columns and rows he or she wants in the table
+ * <li> Asking the user for the column names
+ * <li> Prompting the user to input the data starting with each column and finishing with the last row
+ * <li> We have additions that deal with spacing if the column titles are long
+ * <li> After all the data is entered, the user is given a notification that his or her table is created as a "Database.txt" file 
+ * </ul></p>
+ * 
+ * 
+ * @author Melissa Wu
+ *
+ */
 public class DataToTextFile {
 	private int columnNum;
 	private int rowNum;
