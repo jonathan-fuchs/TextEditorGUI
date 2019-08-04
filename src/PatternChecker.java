@@ -89,7 +89,7 @@ public class PatternChecker {
 	 * @param str
 	 * @return -1 if no 'word character' found, else returns the index of the earliest 'word character' 
 	 */
-	public static int detectNonPunctuation(String str) {
+	public static int detectNonPunctuationNonSpace(String str) {
 		Pattern pattern = Pattern.compile("[\\w]");
 		Matcher matcher = pattern.matcher(str); 
 		

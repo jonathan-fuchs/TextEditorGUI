@@ -657,7 +657,7 @@ public class TextDocumentUI {
     			}
     			
     			// trim leading punctuation
-        		int nonPunctuationIndex = PatternChecker.detectNonPunctuation(currentLine);
+        		int nonPunctuationIndex = PatternChecker.detectNonPunctuationNonSpace(currentLine);
         		if (nonPunctuationIndex > -1) {
         			overallIndex += nonPunctuationIndex;
             		currentLine = currentLine.substring(nonPunctuationIndex);
@@ -682,7 +682,7 @@ public class TextDocumentUI {
         		}
         		// if the remaining characters in a line are punctuation, clears currentLine. Necessary for edge-case
         		else if(currentWord.equals("")) {
-        			if(PatternChecker.detectNonPunctuation(currentLine) == -1) {
+        			if(PatternChecker.detectNonPunctuationNonSpace(currentLine) == -1) {
         				overallIndex += currentLine.length();
         				currentLine = "";
         			}
