@@ -54,59 +54,25 @@ public class IOInterface extends WordRecommender {
 	}
 
 	public void askForInputMethod() {
-		
-		Scanner IOMethod = new Scanner(System.in);
-		System.out.print("Enter '1' to launch a Graphical User Interface, '2' to upload your own text file, or '3' to create a new data table text file: ");
-		
-		boolean repeat = true;
-		
-		while (repeat == true) {
-			String io = IOMethod.nextLine().trim();
-			
-			if (io.equals("2")) {
-				repeat = false;
-				askForDocument();
-			
-				
-			}
-			else if (io.equals("1")) {
-				oldUI = false;
 
-				repeat = false;
-				TextDocumentUI ui = new TextDocumentUI();
-		    	
-		        EventQueue.invokeLater(new Runnable() {
-		            public void run() {
-		                ui.createAndShowGUI();  
-		                
-		                EventQueue.invokeLater(new Runnable() {
-		                	public void run() {		                		
-		                		ui.getFrame().setAlwaysOnTop(false);
-		                	}
-		                });
-		            }
-		        });
 
-			}
-			
-			else if (io.equals("3")) {
-				oldUI = false;
-				repeat = false;
-				DataToTextFile t = new DataToTextFile();
-				t.display();
-				t.insert();
-				System.out.println("Your data table file has been created under the name: 'Database.txt' in this program's root folder");
+		TextDocumentUI ui = new TextDocumentUI();
 
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				ui.createAndShowGUI();  
+
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {		                		
+						ui.getFrame().setAlwaysOnTop(false);
+					}
+				});
 			}
-			else {
-				
-				System.out.print("Input not understood, please re-enter: ");
-				
-			}
-			
-		}
-	
-		IOMethod.close();
+		});
+
+
+
+
 	}
 
 	/**

@@ -82,8 +82,8 @@ public class TextDocumentUI {
 
 	private DefaultHighlighter highlighter;
 	
-	private String dictionaryFileName = "engDictionary.txt";
-	private String backupDictionaryFileName = "engDictionary_backup.txt";
+	private String dictionaryFileName = System.getProperty("user.dir") + "\\resources\\engDictionary.txt";
+	private String backupDictionaryFileName = System.getProperty("user.dir") + "\\resources\\engDictionary_backup.txt";
 	private WordRecommender dictionary = new WordRecommender(dictionaryFileName);
 	private ArrayList<ArrayList<String>> menuSuggestions = new ArrayList<>();	
 	
