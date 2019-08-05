@@ -15,7 +15,7 @@ public class SpellChecker {
 	 */
 	
 	public static void main(String[] args) {		
-		IOInterface instance = new IOInterface("engDictionary.txt");		
+		IOInterface instance = new IOInterface(System.getProperty("user.dir") + "\\resources\\engDictionary.txt");		
 		instance.askForInputMethod();
 		if (instance.getOldUI()) {
 			instance.getAnalysis().spellingAnalysisSuite();
