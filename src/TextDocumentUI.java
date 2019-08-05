@@ -5,7 +5,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JMenuBar;
 import javax.swing.KeyStroke;
-import javax.swing.WindowConstants;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.DefaultHighlighter;
@@ -23,10 +22,10 @@ import javax.swing.JPanel;
 //import javax.swing.JPopupMenu;
 import javax.swing.JTextPane;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
+import javax.swing.JTextArea;
 import javax.swing.Action;
-import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
  
 /**
@@ -70,8 +69,7 @@ public class TextDocumentUI {
 	private JMenuBar menuBar;
 	private JMenuItem suggestionsMenu = new JMenu("Suggestions");;
 	
-	private JDialog popUpWindow;
-	private JTextField popUpWindowTextField;
+	final private JFileChooser fileChooser = new JFileChooser();
 	private Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
 	private String titleBar = "Document Editor GUI";
@@ -82,8 +80,8 @@ public class TextDocumentUI {
 
 	private DefaultHighlighter highlighter;
 	
-	private String dictionaryFileName = System.getProperty("user.dir") + "\\resources\\engDictionary.txt";
-	private String backupDictionaryFileName = System.getProperty("user.dir") + "\\resources\\engDictionary_backup.txt";
+	private String dictionaryFileName = "resources/engDictionary.txt";
+	private String backupDictionaryFileName = "resources/engDictionary_backup.txt";
 	private WordRecommender dictionary = new WordRecommender(dictionaryFileName);
 	private ArrayList<ArrayList<String>> menuSuggestions = new ArrayList<>();	
 	
@@ -144,7 +142,12 @@ public class TextDocumentUI {
         			saveDocument();
         		}
         		else {
-        			createPopUpWindow("Save As");
+        			int returnVal = fileChooser.showSaveDialog(frame);
+            		if (returnVal == JFileChooser.APPROVE_OPTION) {
+            			document = fileChooser.getSelectedFile();
+            			documentName = document.getName();
+            			saveDocumentAs();
+            		}
         		}
         	}
         });
@@ -156,7 +159,13 @@ public class TextDocumentUI {
         menuItemSaveAs.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e)
         	{
-        		createPopUpWindow("Save As");
+        		//createPopUpWindow("Save As");
+        		int returnVal = fileChooser.showSaveDialog(frame);
+        		if (returnVal == JFileChooser.APPROVE_OPTION) {
+        			document = fileChooser.getSelectedFile();
+        			documentName = document.getName();
+        			saveDocumentAs();
+        		}
         	}
         });
         
@@ -167,7 +176,12 @@ public class TextDocumentUI {
         menuItemOpen.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e)
         	{
-        		createPopUpWindow("Open");
+        		int returnVal = fileChooser.showOpenDialog(frame);	
+        		if (returnVal == JFileChooser.APPROVE_OPTION) {
+        			document = fileChooser.getSelectedFile();
+        			documentName = document.getName();
+        			openDocument();
+        		}
         	}
         });
         
@@ -348,8 +362,10 @@ public class TextDocumentUI {
         	public void actionPerformed(ActionEvent e)
         	{
         		try {
-        			Path backupDictionary = Paths.get(backupDictionaryFileName);
-            		Path currentDictionary = Paths.get(dictionaryFileName);
+        			File dictionaryDocument = new File("src\\resources\\engDictionary.txt");
+        			File backupDictionaryDocument = new File("src\\resources\\engDictionary_backup.txt");
+        			Path backupDictionary = Paths.get(backupDictionaryDocument.getAbsolutePath());
+            		Path currentDictionary = Paths.get(dictionaryDocument.getAbsolutePath());
 					Files.copy(backupDictionary, currentDictionary, StandardCopyOption.REPLACE_EXISTING);
 					dictionary = new WordRecommender(dictionaryFileName);
 					menuBar.remove(suggestionsMenu);
@@ -425,7 +441,13 @@ public class TextDocumentUI {
                 		}
             		}
             	}
-            	sAnalysis.approxReadability();
+            	JDialog d = new JDialog(frame, "Readability Score");
+            	JTextArea l = new JTextArea(sAnalysis.approxReadability());
+            	l.setEditable(false);
+            	d.add(l);
+            	d.pack();
+            	d.setLocation(dim.width/2-d.getSize().width/2 - 200, dim.height/2-d.getSize().height/2 - 200);
+            	d.setVisible(true);
             	docScanner.close();
         	}
         });
@@ -445,101 +467,14 @@ public class TextDocumentUI {
         
         return menuBar;
     }
-    
-    /**
-     * Helper method for createPopUpWindow. Triggers open / save as methods based on input
-     * 
-     * @param command String containing desired popUpWindow behavior
-     */
-    public void handlePopUpWindowCommands(String command) {
-    	documentName = popUpWindowTextField.getText();
-    	if (command.equals("Open")) {
-    		Path findDoc = FileSystems.getDefault().getPath(documentName);
-    		if(Files.exists(findDoc)) {
-        		newDocument = false;
-    			openDocument();
-    			popUpWindow.dispose();
-    		}
-    		else {
-    			popUpWindowTextField.setText("File not found. Please re-enter");
-    			popUpWindowTextField.requestFocus();
-    			popUpWindowTextField.selectAll();
-    		}
-
-    	}
-    	else if (command.equals("Save As")) {
-    		newDocument = false;
-    		saveDocumentAs();
-    		popUpWindow.dispose();
-    	}
-    	
-    }
-    
-    /**
-     * Method for creating pop-up window for user input. Separate ActionListeners for clicking button and for hitting 'enter' key.
-     * 
-     * @param command
-     */
-    public void createPopUpWindow(String command) {
-    	ActionListener openButtonPressed = new ActionListener() {
-    		@Override
-    		public void actionPerformed(ActionEvent e) {
-    			handlePopUpWindowCommands(command);
-    		}
-    	};
-
-    	// Separate listener for 'enter' key
-    	class demoKL implements KeyListener {
-    		public void keyTyped(KeyEvent e) {
-    			if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-    				handlePopUpWindowCommands(command);
-    			}
-    		}
-    		public void keyPressed(KeyEvent e) {}
-    		public void keyReleased(KeyEvent e) {}
-    	}
-
-    	popUpWindow = new JDialog(frame, "Type in file name");
-    	
-    	// Creates the pop up window's location in a mostly centered screen position
-    	popUpWindow.setLocation(dim.width/2-popUpWindow.getSize().width/2 - 200, dim.height/2-popUpWindow.getSize().height/2 - 200);
-    	popUpWindow.setSize(318, 70);
-    	popUpWindow.setVisible(true);
-    	popUpWindow.setResizable(false);
-    	popUpWindow.setAlwaysOnTop(true);
-    	popUpWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-    	Container c1 = popUpWindow.getContentPane();
-		c1.setSize(200, 70);
-		// Adds a text field to the pop up window for user input.
-		popUpWindowTextField = new JTextField(20);
-		popUpWindowTextField.setLocation(0, 0);
-		popUpWindowTextField.setSize(200, 70);
-		popUpWindowTextField.setVisible(true);
-		demoKL kl = new demoKL();
-		popUpWindowTextField.addKeyListener(kl);
-		c1.add(popUpWindowTextField, BorderLayout.WEST);
-		
-		// Adds a button the user can press to finalize input
-		JButton button = new JButton(command);
-		button.setLocation(150, 0);
-		button.setBounds(150, 0, 200, 70);
-		button.setSize(50, 70);
-		button.addActionListener(openButtonPressed);
-		        		
-		c1.add(button, BorderLayout.EAST);
-		popUpWindow.pack();
-		    	
-    }
         
     /**
      * Method for opening an existing text file. File contents are displayed in JTextPane and currentFileName menuBar item name changed to display file name.
      */
     public void openDocument() {
-      	
+    	newDocument = false;
     	dictionary = new WordRecommender(dictionaryFileName);
     	documentText = "";
-    	document = new File(documentName);
 
     	try {
     		Scanner docScanner = new Scanner(document);
@@ -566,9 +501,9 @@ public class TextDocumentUI {
      * Method for saving an existing file.
      */
     public void saveDocument() {
-      	
+    	
 		try {
-			Path existingDoc = FileSystems.getDefault().getPath(documentName);
+			Path existingDoc = FileSystems.getDefault().getPath(document.getAbsolutePath());
 			Files.deleteIfExists(existingDoc);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
@@ -576,12 +511,14 @@ public class TextDocumentUI {
 		}
     	
 		try {
-			FileWriter fw = new FileWriter(documentName, true);
+			String documentLocation = document.getAbsolutePath();
+			FileWriter fw = new FileWriter(documentLocation, true);
 			PrintWriter pw = new PrintWriter(fw);
 			pw.print(output.getText());
 			pw.flush();
 			pw.close();
 			fw.close();
+			newDocument = false;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -593,7 +530,8 @@ public class TextDocumentUI {
      */
     public void saveDocumentAs() {
     	try {
-			FileWriter fw = new FileWriter(documentName, true);
+    		String documentLocation = document.getAbsolutePath();
+			FileWriter fw = new FileWriter(documentLocation, true);
 			PrintWriter pw = new PrintWriter(fw);
 			pw.print(output.getText());
 			pw.flush();
@@ -601,6 +539,7 @@ public class TextDocumentUI {
 			fw.close();
 			currentFileName.setText(documentName);
 	        menuBar.updateUI();
+	        newDocument = false;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -739,7 +678,7 @@ public class TextDocumentUI {
     	        	{
     	        		dictionary.getDictionary().addWordToDictionaries(misspelledWord.toLowerCase());
     	        		dictionary.updateDictionaries();
-    	        		File dictionaryDocument = new File(dictionaryFileName);
+    	        		File dictionaryDocument = new File("src\\resources\\engDictionary.txt");
 						try {
 							FileWriter fwDictionary = new FileWriter(dictionaryDocument, true);
 							PrintWriter pwDictionary = new PrintWriter(fwDictionary);
@@ -751,8 +690,9 @@ public class TextDocumentUI {
 						 * If the dictionary file does not exist, tries to create a new dictionary file from the backup dictionary file, and then tries again.
 						 */
 							try {
-								Path backupDictionary = Paths.get(backupDictionaryFileName);
-			            		Path currentDictionary = Paths.get(dictionaryFileName);
+			        			File backupDictionaryDocument = new File("src\\resources\\engDictionary_backup.txt");
+			        			Path backupDictionary = Paths.get(backupDictionaryDocument.getAbsolutePath());
+			            		Path currentDictionary = Paths.get(dictionaryDocument.getAbsolutePath());
 								Files.copy(backupDictionary, currentDictionary, StandardCopyOption.REPLACE_EXISTING);
 								FileWriter fwDictionary = new FileWriter(dictionaryDocument, true);
 								PrintWriter pwDictionary = new PrintWriter(fwDictionary);

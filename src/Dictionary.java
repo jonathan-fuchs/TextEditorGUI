@@ -30,15 +30,17 @@ public class Dictionary {
 	public Dictionary (String fileName) {
 		this.wordDictionary = new HashMap<>();
 		this.wordByLengthDictionary = new HashMap<>();
-		File dictionary = new File(fileName);
+		//InputStream dictionaryStream = getClass().getResourceAsStream("resources/engDictionary.txt");
+		InputStream dictionaryStream = getClass().getResourceAsStream(fileName + "");
+		//File dictionary = new File(fileName);
 		try {
-			Scanner scanner = new Scanner(dictionary);
+			Scanner scanner = new Scanner(dictionaryStream);
 			while (scanner.hasNextLine()) {
 				String word = scanner.nextLine();
 				addWordToDictionaries(word);			
 			}	
 			scanner.close();
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			//TODO create dictionary file from backupdictionary file
 			System.out.println("No dictionary file present!");
 			e.printStackTrace();

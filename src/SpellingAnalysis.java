@@ -77,7 +77,7 @@ public class SpellingAnalysis {
 	 * on the formulas outlined below.
 	 * Once calculated, prints the results to the console.
 	 */
-	public void approxReadability() {
+	public String approxReadability() {
 		/**
 		 * formula for Flesch Reading Ease readability:
 		 *  206.835 – (1.015 x ASL) – (84.6 x ASW)
@@ -107,16 +107,7 @@ public class SpellingAnalysis {
 		this.readingEase = 206.835 - (1.015 * aveSentenceLen) - (84.6 * aveSyllablePerWord);
 		this.readingGradeLevel = (.39 * aveSentenceLen) + (11.8 * aveSyllablePerWord) - 15.59;
 		
-		System.out.println();
-		System.out.println("Readability Metrics");
-		System.out.println("-------------------");
-		System.out.println();
-		System.out.println("The Flesch Reading Ease score for this text is: " + readingEase);
-		System.out.println("This rates out of 100-points and a standard score is between 60-70");
-		System.out.println();
-		System.out.println("The Flesch Kincaid Grade Level score for this text is: " + readingGradeLevel);
-		System.out.println("This gives the grade level with a standard score between 7-8");
-		System.out.println();
+		return "Readability Metrics \n-------------------\n\nThe Flesch Reading Ease score for this text is: " + readingEase + "\nThis rates out of 100-points and a standard score is between 60-70\n\nThe Flesch Kincaid Grade Level score for this text is: " + readingGradeLevel + "\nThis gives the grade level with a standard score between 7-8";
 	}
 	
 	/**
